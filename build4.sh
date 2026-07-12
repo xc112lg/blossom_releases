@@ -84,25 +84,7 @@ common_env_exports() {
 # ------------------------------------------------------------------------------
 run_evolution() {
     common_prep
-    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
-    repo init -u https://github.com/Evolution-X/manifest -b bka --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    rm -rf hardware/lineage/interfaces/sensors
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
-    common_env_exports
-    sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
-    sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
-    sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
-    sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
-
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m evolution
+  
 
     run_upload_evolution
 }
@@ -112,35 +94,7 @@ run_evolution() {
 # ------------------------------------------------------------------------------
 run_lineage() {
     common_prep
-    rm -rf vendor/lineage
-    rm -rf hardware/mediatek
-    rm -rf .repo/local_manifests
-    repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com//xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-
-    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/b8a9f24f9ff6e8de021fa33fc65520571fcf7478.patch | git -C hardware/mediatek am
-    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/8c779b742a41bfd89376933722c5232ba7b1731f.patch | git -C hardware/mediatek am
-
-    export WITH_SU=true
-    export WITH_GMS=false
-    export EVO_BUILD_TYPE=Unofficial
-
-    sed -i 's|tar xfp $PARAM_BOOTANIMATION_TAR -C $INTERMEDIATES|python3 -c "import tarfile; tarfile.open(\\"$PARAM_BOOTANIMATION_TAR\\").extractall(path=\\"$INTERMEDIATES\\")"|' vendor/lineage/bootanimation/gen-bootanimation.sh
-    sed -i '/Command:.*buildFlagInternal/c\            Command: `${buildFlagInternal} --maps-file ${in} --quiet --declarations-only get && : > ${out}`,' build/soong/aconfig/build_flags/init.go
-    sed -i '/^import subprocess$/a from datetime import datetime, timezone' build/soong/scripts/gen_build_prop.py && sed -i '/config\["Date"\] = subprocess.check_output/,/config\["DateUtc"\] = subprocess.check_output/c\  dt = datetime.fromtimestamp(int(raw_date), timezone.utc)\n  config["Date"] = dt.strftime("%a %b %d %H:%M:%S UTC %Y")\n  config["DateUtc"] = str(int(raw_date))' build/soong/scripts/gen_build_prop.py
-
-    common_env_exports
-
-    export RBE_LOG=DEBUG
-    export RBE_VERBOSE=1
-
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m bacon
+  
 
     run_upload_lineage
 }
@@ -150,23 +104,7 @@ run_lineage() {
 # ------------------------------------------------------------------------------
 run_lunaris() {
     common_prep
-    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
-    repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    rm -rf hardware/lineage/interfaces/sensors
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
-    export ro.lunaris.maintainer=xc112lg
-    common_env_exports
-    sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
-
-    lunch lineage_blossom-bp4a-user
-    m installclean
-    m bacon
+  
 
     run_upload_lunaris
 }
@@ -176,23 +114,8 @@ run_lunaris() {
 # ------------------------------------------------------------------------------
 run_axion() {
     common_prep
-    rm -rf .repo/local_manifests
-    repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
-    /opt/crave/resync.sh
-    rm -rf hardware/lineage/interfaces/sensors
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
-    common_env_exports
+   
 
-    #lunch lineage_blossom-bp4a-user
-   # m installclean
-    axion blossom user va
-    m installclean
-    ax -br
     run_upload_axion
 }
 

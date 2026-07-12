@@ -24,6 +24,7 @@
 #   RELEASE_REPO=some_other_repo ./build.sh lunaris
 # ==============================================================================
 set -euo pipefail
+shopt -s nullglob
 
 TARGET="${1:-}"
 
@@ -81,7 +82,7 @@ common_env_exports() {
 # ------------------------------------------------------------------------------
 run_evolution() {
     common_prep
- 
+    
 
     run_upload_evolution
 }
@@ -91,7 +92,7 @@ run_evolution() {
 # ------------------------------------------------------------------------------
 run_lineage() {
     common_prep
- 
+   
 
     run_upload_lineage
 }
@@ -101,7 +102,7 @@ run_lineage() {
 # ------------------------------------------------------------------------------
 run_lunaris() {
     common_prep
- 
+  
 
     run_upload_lunaris
 }
@@ -217,9 +218,9 @@ TEMPLATE
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."
-        gh release delete "$version" --yes
-        git tag -d "$version"
-        git push origin --delete "$version"
+        gh release delete "$version" --yes || true
+        git tag -d "$version" || true
+        git push origin --delete "$version" || true
         echo "Existing tag and releases deleted."
     fi
 
@@ -235,7 +236,9 @@ TEMPLATE
     fi
 
     for filename in "${filenames[@]}"; do
-        gh release upload "$version" "$filename" --clobber
+        if ! gh release upload "$version" "$filename" --clobber; then
+            echo "⚠ Failed to upload $filename — continuing"
+        fi
     done
 
     echo "Files uploaded successfully."

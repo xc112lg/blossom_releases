@@ -3,40 +3,43 @@
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
 # Usage:
-#   ./build.sh lunaris     # or lineage / evolution
+#   ./build.sh lunaris     # or lineage / evolution / axion
 #   curl -sf <raw-url-to-this-file> | bash -s lunaris
 #   curl -sf <raw-url-to-this-file> | bash -s -- lineage
 #
 # One script now does the whole pipeline per target (build → package → GitHub
 # release → Telegram announce), merging what used to be build.sh + upload.sh
 # (itself a merge of upevo.sh + multi_upload3.sh):
-#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X) for device "blossom"
+#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X / AxionAOSP) for
+#      device "blossom"
 #   2. Stage the resulting zip/img/tar into the blossom_releases repo
 #   3. Create/replace the GitHub release + tag and upload the artifacts
 #   4. Send the Telegram announcement (Telegraph changelog + image fallback)
 #
-# All three ROMs release into ONE shared GitHub repo: blossom_releases
+# All four ROMs release into ONE shared GitHub repo: blossom_releases
 # (must already exist on GitHub under xc112lg). Each ROM keeps its own
 # release tag/version string (e.g. LunarisAOSP-20260712, lineage-23.2-...,
-# EvolutionX-16.0-...) so releases never collide in the shared repo.
+# EvolutionX-16.0-..., AxionAOSP-...) so releases never collide in the shared
+# repo.
 #
 # Override the release repo without editing the script:
 #   RELEASE_REPO=some_other_repo ./build.sh lunaris
 # ==============================================================================
 set -euo pipefail
+shopt -s nullglob
 
 TARGET="${1:-}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution>"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution>"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion>"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion>"
     exit 1
 }
 
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution) ;;
+    lunaris|lineage|evolution|axion) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -168,6 +171,31 @@ run_lunaris() {
     run_upload_lunaris
 }
 
+# ------------------------------------------------------------------------------
+# Variant: AxionAOSP
+# ------------------------------------------------------------------------------
+run_axion() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth=1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    /opt/crave/resync.sh
+    rm -rf hardware/lineage/interfaces/sensors
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    #lunch lineage_blossom-bp4a-user
+   # m installclean
+    axion blossom user va
+    m installclean
+    ax -br
+    run_upload_axion
+}
+
 
 # ------------------------------------------------------------------------------
 # Stage 1 (equivalent of upevo.sh): clone the target repo and copy build output
@@ -197,14 +225,64 @@ stage_artifacts() {
 
 # ------------------------------------------------------------------------------
 # Stage 2 (equivalent of multi_upload3.sh): GitHub release + Telegram notify.
-# Variant-specific bits (version string, repo name, message body, banner) are
-# injected as arguments/env from each run_upload_* function below.
+# Only the handful of fields that actually differ between ROMs (title, banner,
+# issues/fixes/notes bullets, hashtag) are passed in — everything else in the
+# Telegram message comes from the one shared TEMPLATE below.
 # ------------------------------------------------------------------------------
 release_and_notify() {
     local version_default="$1"
-    local github_repo_default="$2"
-    local telegram_message="$3"
-    local banner_image="$4"
+    local banner_image="$2"
+    local title="$3"
+    local hashtag="$4"
+    local issues="$5"
+    local fixes="$6"
+    local notes="$7"
+    local github_repo_default="${RELEASE_REPO:-blossom_releases}"
+
+    local telegram_message
+    read -r -d '' telegram_message << TEMPLATE || true
+<b>{{TITLE}} | UNOFFICIAL📱</b>
+
+<b>Device:</b>Blossom
+<b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
+<b>🤖 Android Version:</b> 16 | QPR2
+<b>📅 Build Date:</b> {{BUILD_DATE}}
+<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
+<b>📸 <a href="https://t.me/xc112lgblossomsc">Screenshots</a></b>
+
+{{DOWNLOADS_SECTION}}
+
+<b>🐞 Issues:</b>
+{{ISSUES}}
+
+<b>🐞 Fixes:</b>
+{{FIXES}}
+
+<b>📝 Notes:</b>
+{{NOTES}}
+
+<b>❤️ Credits & Thanks:</b>
+@HaiKitoo and 0kaarun for trees
+zyexro for kernel
+@Yohanyuan for audio fix
+@astechpro20 for msg template
+Yui Onanii, fukiame, @snnbyyds, <a href="http://t.me/Sushrut1101">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
+Thanks to <a href="http://foss.crave.io">crave.io</a> for server
+0kaarun & Yohan Yuan for their help
+Thanks to all other devs
+
+<b>🌐 Stay Updated:</b>
+📢 @xc112lgblossomupdate
+📢 @xc112lgblossomupdate1
+
+#blossom #UNOFFICIAL #{{HASHTAG}} #lunaridolby #Rom
+TEMPLATE
+
+    telegram_message="${telegram_message//\{\{TITLE\}\}/$title}"
+    telegram_message="${telegram_message//\{\{HASHTAG\}\}/$hashtag}"
+    telegram_message="${telegram_message//\{\{ISSUES\}\}/$issues}"
+    telegram_message="${telegram_message//\{\{FIXES\}\}/$fixes}"
+    telegram_message="${telegram_message//\{\{NOTES\}\}/$notes}"
 
     export LC_ALL=en_US.UTF-8
     export LANG=en_US.UTF-8
@@ -229,9 +307,9 @@ release_and_notify() {
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."
-        gh release delete "$version" --yes
-        git tag -d "$version"
-        git push origin --delete "$version"
+        gh release delete "$version" --yes || true
+        git tag -d "$version" || true
+        git push origin --delete "$version" || true
         echo "Existing tag and releases deleted."
     fi
 
@@ -247,7 +325,9 @@ release_and_notify() {
     fi
 
     for filename in "${filenames[@]}"; do
-        gh release upload "$version" "$filename" --clobber
+        if ! gh release upload "$version" "$filename" --clobber; then
+            echo "⚠ Failed to upload $filename — continuing"
+        fi
     done
 
     echo "Files uploaded successfully."
@@ -423,159 +503,80 @@ JSONEOF
 # ------------------------------------------------------------------------------
 run_upload_evolution() {
     stage_artifacts
-    local message="<b>EvolutionX-16.0 | UNOFFICIAL📱</b>
-
-<b>Device:</b>Blossom
-<b>👨‍💻 Builder:</b> <a href=\"http://t.me/xc112lg\">xc112lg</a>
-<b>🤖 Android Version:</b> 16 | QPR2
-<b>📅 Build Date:</b> {{BUILD_DATE}}
-<b>⚙️ <a href=\"{{CHANGELOG_URL}}\">Changelog</a></b>
-<b>📸 <a href=\"https://t.me/xc112lgblossomsc\">Screenshots</a></b>
-
-{{DOWNLOADS_SECTION}}
-
-<b>🐞 Issues:</b>
-NFC not working
-
-<b>🐞 Fixes:</b>
-NFC wont spawn on non NFC variant
-Remove font showing up on setting
-
-<b>📝 Notes:</b>
-Deleted additional fonts to save more space
+    release_and_notify \
+        "EvolutionX-16.0-$(date '+%Y%m%d')" \
+        "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
+        "EvolutionX-16.0" \
+        "Evolution-X" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
 Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi
-
-<b>❤️ Credits & Thanks:</b>
-@HaiKitoo and 0kaarun for trees
-zyexro for kernel
-@Yohanyuan for audio fix
-@astechpro20 for msg template
-Yui Onanii, fukiame, @snnbyyds, <a href=\"http://t.me/Sushrut1101\">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
-Thanks to <a href=\"http://foss.crave.io\">crave.io</a> for server
-0kaarun & Yohan Yuan for their help
-Thanks to all other devs
-
-<b>🌐 Stay Updated:</b>
-📢 @xc112lgblossomupdate
-📢 @xc112lgblossomupdate1
-
-#blossom #UNOFFICIAL #Evolution-X #lunaridolby #Rom"
-
-    release_and_notify \
-        "EvolutionX-16.0-$(date '+%Y%m%d')" \
-        "blossom_releases" \
-        "$message" \
-        "https://github.com/Evolution-X/manifest/raw/bka/Banner.png"
+Default Kernel Sashimi"
 }
 
 run_upload_lineage() {
     stage_artifacts
-    local message="<b>Lineage-23.2 | UNOFFICIAL📱</b>
-
-<b>Device:</b>Blossom
-<b>👨‍💻 Builder:</b> <a href=\"http://t.me/xc112lg\">xc112lg</a>
-<b>🤖 Android Version:</b> 16 | QPR2
-<b>📅 Build Date:</b> {{BUILD_DATE}}
-<b>⚙️ <a href=\"{{CHANGELOG_URL}}\">Changelog</a></b>
-<b>📸 <a href=\"https://t.me/xc112lgblossomsc\">Screenshots</a></b>
-
-{{DOWNLOADS_SECTION}}
-
-<b>🐞 Issues:</b>
-NFC not working
-Cant change to stock kernel
-
-<b>🐞 Fixes:</b>
-NFC wont spawn on non NFC variant
-
-<b>📝 Notes:</b>
-Debloated
+    release_and_notify \
+        "lineage-23.2-$(date '+%Y%m%d')" \
+        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
+        "Lineage-23.2" \
+        "lineage-23.2" \
+        "NFC not working
+Cant change to stock kernel" \
+        "NFC wont spawn on non NFC variant" \
+        "Debloated
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi
-
-<b>❤️ Credits & Thanks:</b>
-@HaiKitoo and 0kaarun for trees
-zyexro for kernel
-@Yohanyuan for audio fix
-@astechpro20 for msg template
-Yui Onanii, fukiame, @snnbyyds, <a href=\"http://t.me/Sushrut1101\">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
-Thanks to <a href=\"http://foss.crave.io\">crave.io</a> for server
-0kaarun & Yohan Yuan for their help
-Thanks to all other devs
-
-<b>🌐 Stay Updated:</b>
-📢 @xc112lgblossomupdate
-📢 @xc112lgblossomupdate1
-
-#blossom #UNOFFICIAL #lineage-23.2 #lunaridolby #Rom"
-
-    release_and_notify \
-        "lineage-23.2-$(date '+%Y%m%d')" \
-        "blossom_releases" \
-        "$message" \
-        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png"
+Default Kernel Sashimi"
 }
 
 run_upload_lunaris() {
     stage_artifacts
-    local message="<b>LunarisAOSP 16.2 | UNOFFICIAL📱</b>
-
-<b>Device:</b>Blossom
-<b>👨‍💻 Builder:</b> <a href=\"http://t.me/xc112lg\">xc112lg</a>
-<b>🤖 Android Version:</b> 16 | QPR2
-<b>📅 Build Date:</b> {{BUILD_DATE}}
-<b>⚙️ <a href=\"{{CHANGELOG_URL}}\">Changelog</a></b>
-<b>📸 <a href=\"https://t.me/xc112lgblossomsc\">Screenshots</a></b>
-
-{{DOWNLOADS_SECTION}}
-
-<b>🐞 Issues:</b>
-NFC not working
-
-<b>🐞 Fixes:</b>
-NFC wont spawn on non NFC variant
-Remove font showing up on setting
-
-<b>📝 Notes:</b>
-Deleted additional fonts to save more space
+    release_and_notify \
+        "LunarisAOSP-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
+        "LunarisAOSP 16.2" \
+        "LunarisAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
 Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi
+Default Kernel Sashimi"
+}
 
-<b>❤️ Credits & Thanks:</b>
-@HaiKitoo and 0kaarun for trees
-zyexro for kernel
-@Yohanyuan for audio fix
-@astechpro20 for msg template
-Yui Onanii, fukiame, @snnbyyds, <a href=\"http://t.me/Sushrut1101\">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
-Thanks to <a href=\"http://foss.crave.io\">crave.io</a> for server
-0kaarun & Yohan Yuan for their help
-Thanks to all other devs
-
-<b>🌐 Stay Updated:</b>
-📢 @xc112lgblossomupdate
-📢 @xc112lgblossomupdate1
-
-#blossom #UNOFFICIAL #LunarisAOSP #lunaridolby #Rom"
-
+run_upload_axion() {
+    stage_artifacts
     release_and_notify \
-        "LunarisAOSP-$(date '+%Y%m%d')" \
-        "blossom_releases" \
-        "$message" \
-        "https://avatars.githubusercontent.com/u/193316573?s=200&v=4"
+        "AxionAOSP-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/197447202?s=200&v=4" \
+        "AxionAOSP" \
+        "AxionAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+July security patch
+Default Kernel Sashimi"
 }
 
 # ------------------------------------------------------------------------------
@@ -588,5 +589,6 @@ case "$TARGET" in
     evolution) run_evolution ;;
     lineage)   run_lineage ;;
     lunaris)   run_lunaris ;;
+    axion)     run_axion ;;
 esac
 echo "✓ Finished blossom build: $TARGET"

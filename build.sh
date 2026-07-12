@@ -25,7 +25,7 @@
 # Override the release repo without editing the script:
 #   RELEASE_REPO=some_other_repo ./build.sh lunaris
 # ==============================================================================
-set -euo pipefail
+#set -euo pipefail
 shopt -s nullglob
 
 TARGET="${1:-}"

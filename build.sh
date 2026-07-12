@@ -11,11 +11,11 @@
 # release → Telegram announce), merging what used to be build.sh + upload.sh
 # (itself a merge of upevo.sh + multi_upload3.sh):
 #   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X) for device "blossom"
-#   2. Stage the resulting zip/img/tar into the blossom_release repo
+#   2. Stage the resulting zip/img/tar into the blossom_releases repo
 #   3. Create/replace the GitHub release + tag and upload the artifacts
 #   4. Send the Telegram announcement (Telegraph changelog + image fallback)
 #
-# All three ROMs release into ONE shared GitHub repo: blossom_release
+# All three ROMs release into ONE shared GitHub repo: blossom_releases
 # (must already exist on GitHub under xc112lg). Each ROM keeps its own
 # release tag/version string (e.g. LunarisAOSP-20260712, lineage-23.2-...,
 # EvolutionX-16.0-...) so releases never collide in the shared repo.
@@ -174,7 +174,7 @@ run_lunaris() {
 # into it. Sets STAGE_DIR to the directory to cd into for stage 2.
 # ------------------------------------------------------------------------------
 stage_artifacts() {
-    local repo="${RELEASE_REPO:-blossom_release}"
+    local repo="${RELEASE_REPO:-blossom_releases}"
 
     if ! ls out/target/product/*/*.zip >/dev/null 2>&1; then
         echo "✗ No built zip found under out/target/product/*/ — did the build succeed?"
@@ -469,7 +469,7 @@ Thanks to all other devs
 
     release_and_notify \
         "EvolutionX-16.0-$(date '+%Y%m%d')" \
-        "blossom_release" \
+        "blossom_releases" \
         "$message" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png"
 }
@@ -520,7 +520,7 @@ Thanks to all other devs
 
     release_and_notify \
         "lineage-23.2-$(date '+%Y%m%d')" \
-        "blossom_release" \
+        "blossom_releases" \
         "$message" \
         "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png"
 }
@@ -573,7 +573,7 @@ Thanks to all other devs
 
     release_and_notify \
         "LunarisAOSP-$(date '+%Y%m%d')" \
-        "blossom_release" \
+        "blossom_releases" \
         "$message" \
         "https://avatars.githubusercontent.com/u/193316573?s=200&v=4"
 }

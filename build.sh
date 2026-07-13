@@ -76,6 +76,9 @@ common_env_exports() {
     export TARGET_INCLUDE_VIA=true
     export TARGET_INCLUDE_REVAMPED=true
     export SELINUX_IGNORE_NEVERALLOWS=true
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    export TARGET_PREBUILT_BCR=false
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
@@ -184,8 +187,7 @@ run_axion() {
     rm -rf hardware/lineage/interfaces/sensors
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
-    export WITH_GMS=false
-    export TARGET_INCLUDE_BCR=false
+
     common_env_exports
 
     #lunch lineage_blossom-bp4a-user

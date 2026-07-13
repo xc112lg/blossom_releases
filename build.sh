@@ -79,6 +79,8 @@ common_env_exports() {
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     export TARGET_PREBUILT_BCR=false
+    export TARGET_ENABLE_BLUR=true
+    export AXION_MAINTAINER=xc112lg | Hows Your Day
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
@@ -189,7 +191,7 @@ run_axion() {
     . build/envsetup.sh
 
     common_env_exports
-
+    export TARGET_IS_LOW_RAM=true
     #lunch lineage_blossom-bp4a-user
    # m installclean
     axion blossom user va

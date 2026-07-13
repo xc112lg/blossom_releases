@@ -204,7 +204,8 @@ run_axion() {
 stage_artifacts() {
     local repo="${RELEASE_REPO:-blossom_releases}"
 
-    if ! ls out/target/product/*/*.zip >/dev/null 2>&1; then
+    local built_zips=(out/target/product/*/*.zip)
+    if [ ${#built_zips[@]} -eq 0 ]; then
         echo "✗ No built zip found under out/target/product/*/ — did the build succeed?"
         exit 1
     fi

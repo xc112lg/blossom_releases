@@ -4,6 +4,8 @@
 #
 # Usage:
 #   ./build.sh lunaris     # or lineage / evolution / axion
+#   ./build.sh axion upload   # skip the build, only stage + release + notify
+#                              # (uses whatever is already in out/target/product/*/*.zip)
 #   curl -sf <raw-url-to-this-file> | bash -s lunaris
 #   curl -sf <raw-url-to-this-file> | bash -s -- lineage
 #
@@ -29,10 +31,15 @@
 shopt -s nullglob
 
 TARGET="${1:-}"
+MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion>"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion>"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion> [build|upload]"
+    echo ""
+    echo "  build   (default) run the full pipeline: build + stage + release + notify"
+    echo "  upload  skip the build, only stage + release + notify using whatever is"
+    echo "          already in out/target/product/*/*.zip"
     exit 1
 }
 
@@ -42,6 +49,14 @@ case "$TARGET" in
     lunaris|lineage|evolution|axion) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
+        usage
+        ;;
+esac
+
+case "$MODE" in
+    build|upload) ;;
+    *)
+        echo "✗ Unknown mode: '$MODE'"
         usage
         ;;
 esac
@@ -589,11 +604,22 @@ Default Kernel Sashimi"
 # ------------------------------------------------------------------------------
 load_env
 
-echo "▶ Starting blossom build: $TARGET"
-case "$TARGET" in
-    evolution) run_evolution ;;
-    lineage)   run_lineage ;;
-    lunaris)   run_lunaris ;;
-    axion)     run_axion ;;
-esac
-echo "✓ Finished blossom build: $TARGET"
+if [ "$MODE" = "upload" ]; then
+    echo "▶ Starting blossom upload-only: $TARGET"
+    case "$TARGET" in
+        evolution) run_upload_evolution ;;
+        lineage)   run_upload_lineage ;;
+        lunaris)   run_upload_lunaris ;;
+        axion)     run_upload_axion ;;
+    esac
+    echo "✓ Finished blossom upload-only: $TARGET"
+else
+    echo "▶ Starting blossom build: $TARGET"
+    case "$TARGET" in
+        evolution) run_evolution ;;
+        lineage)   run_lineage ;;
+        lunaris)   run_lunaris ;;
+        axion)     run_axion ;;
+    esac
+    echo "✓ Finished blossom build: $TARGET"
+fi

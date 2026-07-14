@@ -223,7 +223,7 @@ stage_artifacts() {
     cd "$repo"
 
     # lineage's upevo.sh drops the stock recovery/OTA package before uploading
-    if [ "$TARGET" = "lineage" ]; then
+    if [ "$TARGET" = "lineage" ] || [ "$TARGET" = "axion" ]; then
         rm -f *-ota.zip
     fi
 }

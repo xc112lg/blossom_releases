@@ -136,7 +136,7 @@ run_evolution() {
 run_crdroid() {
     common_prep
     rm -rf .repo/local_manifests
-    repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth 1
+    repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
@@ -157,7 +157,7 @@ run_crdroid() {
 
     lunch lineage_blossom-bp4a-user
     m installclean
-    m crdroid
+    m bacon
 
     run_upload_crdroid
 }

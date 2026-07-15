@@ -3,7 +3,7 @@
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
 # Usage:
-#   ./build.sh lunaris     # or lineage / evolution / axion
+#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid
 #   ./build.sh axion upload   # skip the build, only stage + release + notify
 #                              # (uses whatever is already in out/target/product/*/*.zip)
 #   curl -sf <raw-url-to-this-file> | bash -s lunaris
@@ -12,17 +12,18 @@
 # One script now does the whole pipeline per target (build → package → GitHub
 # release → Telegram announce), merging what used to be build.sh + upload.sh
 # (itself a merge of upevo.sh + multi_upload3.sh):
-#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X / AxionAOSP) for
-#      device "blossom"
+#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X / AxionAOSP /
+#      crDroid) for device "blossom". crDroid builds on the AxionAOSP source
+#      tree with crDroid's cr_config.xml feature-flag overlays layered on top.
 #   2. Stage the resulting zip/img/tar into the blossom_releases repo
 #   3. Create/replace the GitHub release + tag and upload the artifacts
 #   4. Send the Telegram announcement (Telegraph changelog + image fallback)
 #
-# All four ROMs release into ONE shared GitHub repo: blossom_releases
+# All five ROMs release into ONE shared GitHub repo: blossom_releases
 # (must already exist on GitHub under xc112lg). Each ROM keeps its own
 # release tag/version string (e.g. LunarisAOSP-20260712, lineage-23.2-...,
-# EvolutionX-16.0-..., AxionAOSP-...) so releases never collide in the shared
-# repo.
+# EvolutionX-16.0-..., AxionAOSP-..., crDroid-...) so releases never collide
+# in the shared repo.
 #
 # Override the release repo without editing the script:
 #   RELEASE_REPO=some_other_repo ./build.sh lunaris
@@ -34,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -46,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion) ;;
+    lunaris|lineage|evolution|axion|crdroid) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -125,6 +126,40 @@ run_evolution() {
     m evolution
 
     run_upload_evolution
+}
+
+# ------------------------------------------------------------------------------
+# Variant: crDroid (built on the AxionAOSP/lineage-23.2 source tree, with
+# crDroid's feature-flag overlay files layered on top — same overlay paths
+# crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)
+# ------------------------------------------------------------------------------
+run_crdroid() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth 1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    /opt/crave/resync.sh
+    rm -rf hardware/lineage/interfaces/sensors
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    mkdir -p overlay/frameworks/base/core/res/res/values
+    curl -sf -o overlay/frameworks/base/core/res/res/values/cr_config.xml \
+        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/core/res/res/values/cr_config.xml
+
+    mkdir -p overlay/frameworks/base/packages/SystemUI/res/values
+    curl -sf -o overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
+        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m crdroid
+
+    run_upload_crdroid
 }
 
 # ------------------------------------------------------------------------------
@@ -541,6 +576,26 @@ July security patch
 Default Kernel Sashimi"
 }
 
+run_upload_crdroid() {
+    stage_artifacts
+    release_and_notify \
+        "crDroid-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/9610671?s=200&v=4" \
+        "crDroid" \
+        "crDroid" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+July security patch
+Default Kernel Sashimi"
+}
+
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
@@ -611,6 +666,7 @@ if [ "$MODE" = "upload" ]; then
         lineage)   run_upload_lineage ;;
         lunaris)   run_upload_lunaris ;;
         axion)     run_upload_axion ;;
+        crdroid)   run_upload_crdroid ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -620,6 +676,7 @@ else
         lineage)   run_lineage ;;
         lunaris)   run_lunaris ;;
         axion)     run_axion ;;
+        crdroid)   run_crdroid ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

@@ -81,6 +81,7 @@ common_prep() {
     git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
     rm -rf .repo/local_manifests/
     rm -rf device/xiaomi
+    rm -rf vendor/xiaomi/blossom
     rm -rf kernel/xiaomi/blossom
     rm -rf TMP_PATCHES
     sudo apt update >/dev/null 2>&1

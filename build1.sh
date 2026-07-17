@@ -155,7 +155,7 @@ run_crdroid() {
     mkdir -p overlay/frameworks/base/packages/SystemUI/res/values
     curl -sf -o overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
         https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
-
+    sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
     lunch lineage_blossom-bp4a-user
     m installclean
     m bacon

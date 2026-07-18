@@ -83,6 +83,7 @@ common_prep() {
     rm -rf device/xiaomi
     rm -rf vendor/xiaomi/blossom
     rm -rf kernel/xiaomi/blossom
+    rm -rf packages/apps/Settings
     rm -rf TMP_PATCHES
     sudo apt update >/dev/null 2>&1
     sudo apt install patchelf -y >/dev/null 2>&1

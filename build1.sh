@@ -156,6 +156,7 @@ run_crdroid() {
     curl -sf -o overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
         https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
     sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
+    sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt
     lunch lineage_blossom-bp4a-user
     m installclean
     m bacon

@@ -112,7 +112,6 @@ run_evolution() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    rm -rf hardware/lineage/interfaces/sensors
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
@@ -142,7 +141,6 @@ run_crdroid() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    rm -rf hardware/lineage/interfaces/sensors
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
@@ -171,7 +169,6 @@ run_crdroid() {
 run_lineage() {
     common_prep
     rm -rf vendor/lineage
-    rm -rf hardware/mediatek
     rm -rf .repo/local_manifests
     repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com//xc112lg/blossom_manifest.git -b a1 .repo/local_manifests

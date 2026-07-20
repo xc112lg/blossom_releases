@@ -242,7 +242,8 @@ run_axion() {
 
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
-
+    sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libutils-v30",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
+    cat hardware/lineage/compat/Android.bp
     common_env_exports
     export TARGET_IS_LOW_RAM=true
     #lunch lineage_blossom-bp4a-user

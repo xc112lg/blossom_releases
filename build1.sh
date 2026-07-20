@@ -1,4 +1,4 @@
-....#!/bin/bash
+ #!/bin/bash
 # ==============================================================================
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
@@ -87,6 +87,7 @@ common_prep() {
     rm -rf kernel/xiaomi/blossom
     rm -rf packages/apps/Settings
     rm -rf TMP_PATCHES
+    rm -rf hardware/lineage/
     sudo apt update >/dev/null 2>&1
     sudo apt install patchelf -y >/dev/null 2>&1
 }

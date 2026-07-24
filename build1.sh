@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 # ==============================================================================
 # blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
 #
@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -130,6 +130,29 @@ run_evolution() {
     m evolution
 
     run_upload_evolution
+}
+
+# ------------------------------------------------------------------------------
+# Variant: DerpFest
+# ------------------------------------------------------------------------------
+run_derpfest() {
+    common_prep
+    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
+    repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    /opt/crave/resync.sh
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    mka derp
+
+    run_upload_derpfest
 }
 
 # ------------------------------------------------------------------------------
@@ -580,6 +603,26 @@ July security patch
 Default Kernel Sashimi"
 }
 
+run_upload_derpfest() {
+    stage_artifacts
+    release_and_notify \
+        "DerpFest-16.2-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/95412874?s=200&v=4" \
+        "DerpFest 16.2" \
+        "DerpFest" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+July security patch
+Default Kernel Sashimi"
+}
+
 run_upload_crdroid() {
     stage_artifacts
     release_and_notify \
@@ -671,6 +714,7 @@ if [ "$MODE" = "upload" ]; then
         lunaris)   run_upload_lunaris ;;
         axion)     run_upload_axion ;;
         crdroid)   run_upload_crdroid ;;
+        derpfest)  run_upload_derpfest ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -681,6 +725,7 @@ else
         lunaris)   run_lunaris ;;
         axion)     run_axion ;;
         crdroid)   run_crdroid ;;
+        derpfest)  run_derpfest ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

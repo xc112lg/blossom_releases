@@ -79,7 +79,7 @@ load_env() {
 
 common_prep() {
     load_env
-    #git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+   # git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
     git config --global url."https://${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
     rm -rf .repo/local_manifests/
     rm -rf device/xiaomi

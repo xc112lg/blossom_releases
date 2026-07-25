@@ -294,7 +294,7 @@ stage_artifacts() {
     fi
 
     rm -rf "$repo"
-    git clone "https://${GH_TOKEN}@github.com//xc112lg/${repo}"
+    git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
 
     cp out/target/product/*/*.zip "$repo/"
     cp out/target/product/*/*.tar "$repo/" 2>/dev/null || true
@@ -373,16 +373,16 @@ TEMPLATE
 
     if ! command -v gh &> /dev/null; then
         echo "GitHub CLI 'gh' not found. Downloading and installing..."
-        wget https://github.com/cli/cli/releases/download/v2.40.1/gh_2.40.1_linux_amd64.tar.gz
-        tar -xvf gh_2.40.1_linux_amd64.tar.gz
-        sudo mv gh_*_linux_amd64/bin/gh /usr/local/bin/
+        wget -q https://github.com/cli/cli/releases/download/v2.40.1/gh_2.40.1_linux_amd64.tar.gz
+        tar -xf gh_2.40.1_linux_amd64.tar.gz
+        sudo mv gh_*_linux_amd64/bin/gh /usr/local/bin/ >/dev/null 2>&1
         echo "GitHub CLI 'gh' installed successfully."
     else
         echo "GitHub CLI 'gh' is already installed."
     fi
 
     if ! gh auth status &> /dev/null; then
-        gh auth login --with-token "$GH_TOKEN"
+        gh auth login --with-token "$GH_TOKEN" >/dev/null 2>&1
     else
         echo "Already authenticated with GitHub."
     fi
@@ -391,25 +391,25 @@ TEMPLATE
 
     if gh release view "$version" &> /dev/null; then
         echo "Deleting existing tag and releases for $version..."
-        gh release delete "$version" --yes || true
-        git tag -d "$version" || true
-        git push origin --delete "$version" || true
+        gh release delete "$version" --yes >/dev/null 2>&1 || true
+        git tag -d "$version" >/dev/null 2>&1 || true
+        git push origin --delete "$version" >/dev/null 2>&1 || true
         echo "Existing tag and releases deleted."
     fi
 
     git tag -a "$version" -m "Release $version"
-    git push origin "$version" --force
+    git push origin "$version" --force -q >/dev/null 2>&1
 
     declare -a filenames
     filenames=(*.zip *.img *.txt *.json)
 
-    if ! gh release create "$version" --title "Release $version" --notes "Release notes"; then
+    if ! gh release create "$version" --title "Release $version" --notes "Release notes" >/dev/null 2>&1; then
         echo "Error: Failed to create the release."
         exit 1
     fi
 
     for filename in "${filenames[@]}"; do
-        if ! gh release upload "$version" "$filename" --clobber; then
+        if ! gh release upload "$version" "$filename" --clobber >/dev/null 2>&1; then
             echo "⚠ Failed to upload $filename — continuing"
         fi
     done

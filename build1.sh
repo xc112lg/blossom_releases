@@ -138,12 +138,13 @@ run_evolution() {
 # ------------------------------------------------------------------------------
 run_derpfest() {
     common_prep
-    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
+    rm -rf .repo/local_manifests vendor/lineage
     repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    sed -i '\|$(call inherit-product, vendor/gms/products/gms.mk)|d' vendor/lineage/config/derpfest.mk
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

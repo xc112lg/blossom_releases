@@ -150,12 +150,6 @@ run_derpfest() {
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 
-    sed -i '27a\
-\
-# GMS packages\
-PRODUCT_PACKAGES += \\\
-    SoundPickerPrebuilt_33000242' device/xiaomi/blossom/device.mk
-
     lunch lineage_blossom-bp4a-user
     m installclean
     mka derp

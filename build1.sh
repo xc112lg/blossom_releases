@@ -114,7 +114,7 @@ run_evolution() {
     rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
     repo init -u https://github.com/Evolution-X/manifest -b bka --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -141,7 +141,7 @@ run_derpfest() {
     rm -rf .repo/local_manifests vendor/lineage
     repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '/^#LOCAL_PATH := vendor\/overlay\/fonts$/,/FontGoogleSansFlexRegularOverlay/d' vendor/overlay/overlays.mk
@@ -167,7 +167,7 @@ run_crdroid() {
     rm -rf .repo/local_manifests
     repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -200,7 +200,7 @@ run_lineage() {
     rm -rf .repo/local_manifests
     repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com//xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -236,7 +236,7 @@ run_lunaris() {
     rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
     repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
 
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
@@ -262,7 +262,7 @@ run_axion() {
     rm -rf .repo/local_manifests
     repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
-    repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
 
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1

@@ -145,7 +145,7 @@ run_derpfest() {
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    sed -i '/^#LOCAL_PATH := vendor\/overlay\/fonts$/,/FontGoogleSansFlexRegularOverlay/d' vendor/overlay/overlays.mk
+    sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
     . build/envsetup.sh
 
     export TARGET_INCLUDE_BCR=false

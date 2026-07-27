@@ -74,6 +74,7 @@ load_env() {
         echo "✓ Loaded .env from parent directory"
     else
         echo "⚠ .env file not found"
+        exit 1
     fi
 }
 

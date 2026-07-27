@@ -144,9 +144,9 @@ run_derpfest() {
     repo sync -c -j32 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-    sed -i '\|$(call inherit-product, vendor/gms/products/gms.mk)|d' vendor/lineage/config/derpfest.mk
+    sed -i '/^#LOCAL_PATH := vendor\/overlay\/fonts$/,/FontGoogleSansFlexRegularOverlay/d' overlays.mk
     . build/envsetup.sh
-    export WITH_GMS=false
+    sed -i '/^#LOCAL_PATH := vendor\/overlay\/fonts$/,/FontGoogleSansFlexRegularOverlay/d' overlays.mk
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 

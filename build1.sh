@@ -147,6 +147,7 @@ run_derpfest() {
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
     sed -i '\|include vendor/fontage/config.mk|d' vendor/lineage/config/derpfest.mk
+    sed -i '/Chrome\/Chrome\.apk\.gz/d;/TrichromeLibrary\/TrichromeLibrary\.apk\.gz/d' vendor/gms/common/common-vendor.mk
     . build/envsetup.sh
 
     export TARGET_INCLUDE_BCR=false

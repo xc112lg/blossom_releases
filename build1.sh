@@ -177,12 +177,12 @@ run_crdroid() {
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 
-    mkdir -p overlay/frameworks/base/core/res/res/values
-    curl -sf -o overlay/frameworks/base/core/res/res/values/cr_config.xml \
+    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values
+    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values/cr_config.xml \
         https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/core/res/res/values/cr_config.xml
 
-    mkdir -p overlay/frameworks/base/packages/SystemUI/res/values
-    curl -sf -o overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
+    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values
+    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
         https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
     sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
     sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt

@@ -276,7 +276,7 @@ run_axion() {
     export TARGET_IS_LOW_RAM=true
     #lunch lineage_blossom-bp4a-user
    # m installclean
-    axion blossom eng va
+    axion blossom user va
     m installclean
     ax -br
     run_upload_axion

@@ -68,12 +68,9 @@ esac
 load_env() {
     if [ -f .env ]; then
         export $(cat .env | grep -v '#' | xargs)
-        echo "✓ Loaded .env from current directory"
     elif [ -f ../.env ]; then
         export $(cat ../.env | grep -v '#' | xargs)
-        echo "✓ Loaded .env from parent directory"
     else
-        echo "⚠ .env file not found"
         exit 1
     fi
 }
@@ -711,7 +708,7 @@ Default Kernel Sashimi"
 load_env
 
 if [ "$MODE" = "upload" ]; then
-    echo "▶ Starting blossom upload-only: $TARGET"
+ #   echo "▶ Starting blossom upload-only: $TARGET"
     case "$TARGET" in
         evolution) run_upload_evolution ;;
         lineage)   run_upload_lineage ;;
@@ -722,7 +719,7 @@ if [ "$MODE" = "upload" ]; then
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
-    echo "▶ Starting blossom build: $TARGET"
+#    echo "▶ Starting blossom build: $TARGET"
     case "$TARGET" in
         evolution) run_evolution ;;
         lineage)   run_lineage ;;

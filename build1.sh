@@ -100,7 +100,7 @@ common_env_exports() {
     export TARGET_INCLUDE_BCR=false
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=true
-    export AXION_MAINTAINER=xc112lg | Hows Your Day
+    export AXION_MAINTAINER=xc112lg
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 

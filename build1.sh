@@ -114,7 +114,7 @@ run_evolution() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
@@ -141,7 +141,7 @@ run_derpfest() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
     sed -i '\|include vendor/fontage/config.mk|d' vendor/lineage/config/derpfest.mk
     sed -i '/Chrome\/Chrome\.apk\.gz/d;/TrichromeLibrary\/TrichromeLibrary\.apk\.gz/d' vendor/gms/common/common-vendor.mk
@@ -169,7 +169,7 @@ run_crdroid() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
@@ -202,7 +202,7 @@ run_lineage() {
     git clone https://$GH_TOKEN@github.com//xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
 
     curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/b8a9f24f9ff6e8de021fa33fc65520571fcf7478.patch | git -C hardware/mediatek am
@@ -239,7 +239,7 @@ run_lunaris() {
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
 
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
@@ -265,7 +265,7 @@ run_axion() {
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
 
-    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libutils-v30",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
     sed -i '$a AXION_MAINTAINER := xc112lg' device/xiaomi/blossom/lineage_blossom.mk

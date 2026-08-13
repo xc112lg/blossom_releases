@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -189,6 +189,29 @@ run_crdroid() {
     m bacon
 
     run_upload_crdroid
+}
+
+# ------------------------------------------------------------------------------
+# Variant: AlphaDroid
+# ------------------------------------------------------------------------------
+run_alphadroid() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/alphadroid-project/manifest -b alpha-16.2 --git-lfs --depth=1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+    /opt/crave/resync.sh
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_alphadroid
 }
 
 # ------------------------------------------------------------------------------
@@ -645,6 +668,26 @@ July security patch
 Default Kernel Sashimi"
 }
 
+run_upload_alphadroid() {
+    stage_artifacts
+    release_and_notify \
+        "AlphaDroid-16.2-$(date '+%Y%m%d')" \
+        "https://github.com/AlphaDroid-Project.png" \
+        "AlphaDroid 16.2" \
+        "AlphaDroid" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Deleted additional fonts to save more space
+Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+July security patch
+Default Kernel Sashimi"
+}
+
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
@@ -717,6 +760,7 @@ if [ "$MODE" = "upload" ]; then
         axion)     run_upload_axion ;;
         crdroid)   run_upload_crdroid ;;
         derpfest)  run_upload_derpfest ;;
+        alphadroid) run_upload_alphadroid ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -728,6 +772,7 @@ else
         axion)     run_axion ;;
         crdroid)   run_crdroid ;;
         derpfest)  run_derpfest ;;
+        alphadroid) run_alphadroid ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

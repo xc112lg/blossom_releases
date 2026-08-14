@@ -71,6 +71,7 @@ load_env() {
     elif [ -f ../.env ]; then
         export $(cat ../.env | grep -v '#' | xargs)
     else
+        echo "missing .env"
         exit 1
     fi
 }

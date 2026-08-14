@@ -207,16 +207,16 @@ run_alphadroid() {
     sed -i 's|vendor/lineage/|vendor/alpha/|g' device/xiaomi/blossom/lineage_blossom.mk
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/alpha_blossom.mk
-    vendor/lineage/
+
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 
-    lunch lineage_blossom-bp4a-user
+    breakfast blossom
     m installclean
-    m bacon
+    brunch blossom
 
     run_upload_alphadroid
 }

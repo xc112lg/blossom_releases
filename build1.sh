@@ -205,7 +205,7 @@ run_alphadroid() {
     sed -i 's/lineage_blossom/alpha_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
     sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := alpha_blossom/' device/xiaomi/blossom/lineage_blossom.mk
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
-    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/aplha_blossom.mk
+    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/alpha_blossom.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

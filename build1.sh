@@ -202,6 +202,10 @@ run_alphadroid() {
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
     /opt/crave/resync.sh
+    sed -i 's/lineage_blossom/alpha_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
+    sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := alpha_blossom/' device/xiaomi/blossom/lineage_blossom.mk
+    grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
+    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/aplha_blossom.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

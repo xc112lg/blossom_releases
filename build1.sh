@@ -209,6 +209,7 @@ run_alphadroid() {
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/alpha_blossom.mk
     git clone https://github.com/AlphaDroid-Project/hardware_pixelworks_interfaces -b alpha-16.2 hardware/pixelworks/interfaces --depth 1
+    sed -i '/^    hardware\/google\/interfaces \\$/a\    hardware/pixelworks/interfaces \\' device/xiaomi/blossom/device.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

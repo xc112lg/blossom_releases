@@ -103,6 +103,7 @@ common_env_exports() {
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=true
     export AXION_MAINTAINER=xc112lg
+    export ALPHA_MAINTAINER="xc112lg | How's Your Day"
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
@@ -210,7 +211,7 @@ run_alphadroid() {
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/alpha_blossom.mk
     git clone https://github.com/AlphaDroid-Project/hardware_pixelworks_interfaces -b alpha-16.2 hardware/pixelworks/interfaces --depth 1
     sed -i '/^    hardware\/google\/interfaces \\$/a\    hardware/pixelworks/interfaces \\' device/xiaomi/blossom/device.mk
-    sed -i "\$a ro.alpha.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
+    #sed -i "\$a ro.alpha.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

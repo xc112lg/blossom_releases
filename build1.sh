@@ -636,7 +636,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_derpfest() {
@@ -656,7 +656,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_crdroid() {
@@ -676,7 +676,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_alphadroid() {
@@ -696,7 +696,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_lineage() {
@@ -714,7 +714,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_lunaris() {
@@ -734,7 +734,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 run_upload_axion() {
@@ -754,7 +754,7 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 July security patch
-Default Kernel Sashimi"
+Stock Kernel"
 }
 
 # ------------------------------------------------------------------------------

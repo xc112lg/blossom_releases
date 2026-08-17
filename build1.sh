@@ -763,7 +763,7 @@ Stock Kernel"
 load_env
 
 if [ "$MODE" = "upload" ]; then
- #   echo "▶ Starting blossom upload-only: $TARGET"
+    echo "▶ Starting blossom upload-only: $TARGET"
     case "$TARGET" in
         evolution) run_upload_evolution ;;
         lineage)   run_upload_lineage ;;

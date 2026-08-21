@@ -634,7 +634,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_derpfest() {
@@ -652,7 +653,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_crdroid() {
@@ -670,7 +672,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_alphadroid() {
@@ -688,7 +691,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_lineage() {
@@ -699,13 +703,15 @@ run_upload_lineage() {
         "Lineage-23.2" \
         "lineage-23.2" \
         "NFC not working
-Cant change to stock kernel" \
+Cant change to Stock Kernel
+Builder dont check its own build due to 2Gb device " \
         "NFC wont spawn on non NFC variant" \
         "Debloated
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_lunaris() {
@@ -723,7 +729,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 run_upload_axion() {
@@ -741,7 +748,8 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel"
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 # ------------------------------------------------------------------------------

@@ -629,13 +629,11 @@ run_upload_evolution() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -649,13 +647,11 @@ run_upload_derpfest() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -669,13 +665,11 @@ run_upload_crdroid() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -689,13 +683,11 @@ run_upload_alphadroid() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -713,7 +705,6 @@ Cant change to stock kernel" \
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -727,13 +718,11 @@ run_upload_lunaris() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 
@@ -747,13 +736,11 @@ run_upload_axion() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant
 Remove font showing up on setting" \
-        "Deleted additional fonts to save more space
-Debloated
+        "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-July security patch
 Stock Kernel"
 }
 

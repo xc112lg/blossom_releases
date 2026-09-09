@@ -104,7 +104,7 @@ common_env_exports() {
     export TARGET_ENABLE_BLUR=true
     export AXION_MAINTAINER=xc112lg
     export ALPHA_MAINTAINER="xc112lg | How's Your Day"
-    expotr MISTOS_MAINTAINER="xc112lg"
+    export MISTOS_MAINTAINER="xc112lg"
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 

@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -104,6 +104,7 @@ common_env_exports() {
     export TARGET_ENABLE_BLUR=true
     export AXION_MAINTAINER=xc112lg
     export ALPHA_MAINTAINER="xc112lg | How's Your Day"
+    expotr MISTOS_MAINTAINER="xc112lg"
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
@@ -311,6 +312,33 @@ run_axion() {
     m installclean
     ax -br
     run_upload_axion
+}
+
+# ------------------------------------------------------------------------------
+# Variant: MistOS
+# ------------------------------------------------------------------------------
+run_mist() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/Project-Mist-OS/manifest.git -b 16.2 --git-lfs --depth=1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    repo sync -c -j64 --force-sync --no-clone-bundle --no-tags
+    /opt/crave/resync.sh
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    export TARGET_USES_MINI_GAPPS=false
+    export TARGET_SUPPORTS_QUICK_TAP=true
+    export BYPASS_CHARGE_SUPPORTED=true
+    common_env_exports
+
+    mistify blossom user
+    m installclean
+    mist b
+
+    run_upload_mist
 }
 
 
@@ -695,6 +723,25 @@ Stock Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
+run_upload_mist() {
+    stage_artifacts
+    release_and_notify \
+        "MistOS-$(date '+%Y%m%d')" \
+        "https://github.com/Project-Mist-OS.png" \
+        "MistOS" \
+        "MistOS" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
@@ -767,6 +814,7 @@ if [ "$MODE" = "upload" ]; then
         crdroid)   run_upload_crdroid ;;
         derpfest)  run_upload_derpfest ;;
         alphadroid) run_upload_alphadroid ;;
+        mist)      run_upload_mist ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -779,6 +827,7 @@ else
         crdroid)   run_crdroid ;;
         derpfest)  run_derpfest ;;
         alphadroid) run_alphadroid ;;
+        mist)      run_mist ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

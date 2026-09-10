@@ -318,6 +318,7 @@ run_mist() {
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk
+    perl -0777 -pi -e 's/cc_prebuilt_library_shared \{\n(?:(?!cc_prebuilt_library_shared \{).)*?name: "libprotobuf-cpp-(?:full|lite)-(?:3\.9\.1|21\.12)-vendorcompat",.*?\n\}\n\n//gs' "$TOP/hardware/lineage/compat/Android.bp"
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

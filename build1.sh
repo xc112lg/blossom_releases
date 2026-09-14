@@ -869,7 +869,7 @@ if [ "$MODE" = "upload" ]; then
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
-#    echo "▶ Starting blossom build: $TARGET"
+    echo "▶ Starting blossom build: $TARGET"
     case "$TARGET" in
         evolution) run_evolution ;;
         lineage)   run_lineage ;;

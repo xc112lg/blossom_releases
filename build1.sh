@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -105,6 +105,7 @@ common_env_exports() {
     export AXION_MAINTAINER=xc112lg
     export ALPHA_MAINTAINER="xc112lg | How's Your Day"
     export MISTOS_MAINTAINER="xc112lg"
+    export INFINITY_MAINTAINER= "xc112lg" 
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 }
 
@@ -220,6 +221,32 @@ run_alphadroid() {
     brunch blossom
 
     run_upload_alphadroid
+}
+
+# ------------------------------------------------------------------------------
+# Variant: ProjectInfinity-X
+# ------------------------------------------------------------------------------
+run_infinity() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 16 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
+    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    sed -i 's/lineage_blossom/infinity_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
+    sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := infinity_blossom/' device/xiaomi/blossom/lineage_blossom.mk
+    grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
+    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/infinity_blossom.mk
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    lunch infinity_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_infinity
 }
 
 # ------------------------------------------------------------------------------
@@ -746,6 +773,25 @@ Stock Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
+run_upload_infinity() {
+    stage_artifacts
+    release_and_notify \
+        "InfinityX-16-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/155563206?s=200&v=4" \
+        "ProjectInfinity-X" \
+        "InfinityX" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
@@ -819,6 +865,7 @@ if [ "$MODE" = "upload" ]; then
         derpfest)  run_upload_derpfest ;;
         alphadroid) run_upload_alphadroid ;;
         mist)      run_upload_mist ;;
+        infinity)  run_upload_infinity ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -832,6 +879,7 @@ else
         derpfest)  run_derpfest ;;
         alphadroid) run_alphadroid ;;
         mist)      run_mist ;;
+        infinity)  run_infinity ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

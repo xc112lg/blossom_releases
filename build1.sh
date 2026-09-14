@@ -243,7 +243,7 @@ run_infinity() {
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 
-    lunch infinity_blossom-bp4a-user
+    lunch infinity_blossom-user
     m installclean
     m bacon
 

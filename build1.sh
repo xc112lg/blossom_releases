@@ -228,7 +228,7 @@ run_alphadroid() {
 # ------------------------------------------------------------------------------
 run_infinity() {
     common_prep
-    rm -rf .repo/local_manifests
+    rm -rf .repo/local_manifests prebuilts/misc/protobuf_vendorcompat
     repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 16 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
     git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
@@ -236,6 +236,7 @@ run_infinity() {
     sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := infinity_blossom/' device/xiaomi/blossom/lineage_blossom.mk
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/infinity_blossom.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/infinity/config/common_full_phone.mk)#' device/xiaomi/blossom/infinity_blossom.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

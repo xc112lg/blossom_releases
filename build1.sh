@@ -99,6 +99,7 @@ common_env_exports() {
     export TARGET_INCLUDE_REVAMPED=true
     export SELINUX_IGNORE_NEVERALLOWS=true
     export WITH_GMS=false
+    export WITH_GAPPS=false
     export TARGET_INCLUDE_BCR=false
     export TARGET_PREBUILT_BCR=false
     export TARGET_ENABLE_BLUR=true
@@ -237,6 +238,7 @@ run_infinity() {
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/infinity_blossom.mk
     sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/infinity/config/common_full_phone.mk)#' device/xiaomi/blossom/infinity_blossom.mk
+    sed -i '$a INFINITY_MAINTAINER := "xc112lg"' device/xiaomi/blossom/BoardConfig.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

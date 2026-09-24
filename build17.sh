@@ -139,7 +139,7 @@ fi
 export JAVA_HOME="$PWD/prebuilts/jdk/jdk21/linux-x86"
 export PATH="$JAVA_HOME/bin:$PATH"
 
-    lunch lineage_blossom-cp2a-user
+    lunch lineage_blossom-cp2a-eng
     m installclean
     m evolution
 

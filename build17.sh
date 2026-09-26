@@ -139,7 +139,7 @@ fi
 export JAVA_HOME="$PWD/prebuilts/jdk/jdk21/linux-x86"
 export PATH="$JAVA_HOME/bin:$PATH"
 
-grep -q "target: {" external/libmnl/Android.bp && echo "already patched, skipping" || sed -i '/vendor_available: true,/a\    target: {\n        vendor: {\n            enabled: false,\n        },\n    },' external/libmnl/Android.bp
+grep -q "vendor_available: false," external/libmnl/Android.bp && echo "already patched, skipping" || sed -i 's/vendor_available: true,/vendor_available: false,/' external/libmnl/Android.bp
 
     lunch lineage_blossom-cp2a-eng
     m installclean

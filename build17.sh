@@ -86,6 +86,7 @@ common_prep() {
     rm -rf vendor/xiaomi/blossom
     rm -rf kernel/xiaomi/blossom
     rm -rf packages/apps/Settings
+    rm -rf hardware/mediatek
     rm -rf TMP_PATCHES
     rm -rf hardware/lineage/
     rm -rf hardware/pixelworks/interfaces
@@ -135,6 +136,8 @@ else
     curl -Ls https://github.com/yaap-17-stone/build_soong/commit/f9c27b0b9298f6eeee9a850346e0a646c3eaeb87.patch | \
         git -C build/soong am
 fi
+
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' /tmp/src/android/hardware/mediatek/Android.bp
 
 export JAVA_HOME="$PWD/prebuilts/jdk/jdk21/linux-x86"
 export PATH="$JAVA_HOME/bin:$PATH"

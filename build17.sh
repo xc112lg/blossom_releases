@@ -136,7 +136,7 @@ else
     curl -Ls https://github.com/yaap-17-stone/build_soong/commit/f9c27b0b9298f6eeee9a850346e0a646c3eaeb87.patch | \
         git -C build/soong am
 fi
-
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' /tmp/src/android/hardware/mediatek/Android.bp
 /usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
 export JAVA_HOME="$PWD/prebuilts/jdk/jdk21/linux-x86"
 export PATH="$JAVA_HOME/bin:$PATH"

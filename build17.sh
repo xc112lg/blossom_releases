@@ -74,13 +74,15 @@ load_env() {
         echo "missing .env"
         exit 1
     fi
+    export GIT_TERMINAL_PROMPT=0   # fail fast instead of hanging on a credential prompt
+    [ -z "${GH_TOKEN:-}" ] && { echo "✗ GH_TOKEN is empty after loading .env"; exit 1; }
 }
 
 common_prep() {
     load_env
    # git config --global url."https://${GH_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
     git config --global --unset-all url."https://github.com/".insteadOf 2>/dev/null || true
-    git config --global url."https://${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
+    git config --global url."https://xc112lg:${GH_TOKEN}@github.com/".insteadOf "https://github.com/"
     rm -rf .repo/local_manifests/
     rm -rf device/xiaomi
     rm -rf vendor/xiaomi/blossom
@@ -118,7 +120,7 @@ run_evolution() {
     common_prep
     rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
     repo init -u https://github.com/Evolution-X/manifest -b cnb --git-lfs --depth=1 
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -156,7 +158,7 @@ run_derpfest() {
     common_prep
     rm -rf .repo/local_manifests vendor/lineage
     repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
@@ -183,7 +185,7 @@ run_crdroid() {
     common_prep
     rm -rf .repo/local_manifests
     repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -214,7 +216,7 @@ run_alphadroid() {
     common_prep
     rm -rf .repo/local_manifests
     repo init -u https://github.com/alphadroid-project/manifest -b alpha-16.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     sed -i 's/lineage_blossom/alpha_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
     sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := alpha_blossom/' device/xiaomi/blossom/lineage_blossom.mk
@@ -244,7 +246,7 @@ run_infinity() {
     common_prep
     rm -rf .repo/local_manifests prebuilts/misc/protobuf_vendorcompat
     repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 16 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     sed -i 's/lineage_blossom/infinity_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
     sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := infinity_blossom/' device/xiaomi/blossom/lineage_blossom.mk
@@ -273,7 +275,7 @@ run_lineage() {
     rm -rf vendor/lineage
     rm -rf .repo/local_manifests
     repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com//xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
@@ -308,7 +310,7 @@ run_lunaris() {
     common_prep
     rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
     repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
 
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
@@ -333,7 +335,7 @@ run_axion() {
     common_prep
     rm -rf .repo/local_manifests
     repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
 
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
@@ -357,7 +359,7 @@ run_mist() {
     common_prep
     rm -rf .repo/local_manifests
     repo init -u https://github.com/Project-Mist-OS/manifest.git -b 16.2 --git-lfs --depth=1
-    git clone https://$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    git clone https://xc112lg:$GH_TOKEN@github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk
@@ -403,7 +405,7 @@ stage_artifacts() {
     fi
 
     rm -rf "$repo"
-    git clone -q "https://${GH_TOKEN}@github.com//xc112lg/${repo}" >/dev/null 2>&1
+    git clone -q "https://xc112lg:${GH_TOKEN}@github.com/xc112lg/${repo}" >/dev/null 2>&1
 
     cp out/target/product/*/*.zip "$repo/"
     cp out/target/product/*/*.tar "$repo/" 2>/dev/null || true

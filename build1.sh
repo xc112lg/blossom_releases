@@ -360,7 +360,7 @@ run_mist() {
     common_prep
     rm -rf .repo/local_manifests
     repo init -u https://github.com/Project-Mist-OS/manifest.git -b 16.2 --git-lfs --depth=1
-    git clone https://github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    git clone https://github.com/xc112lg/blossom_manifest.git -b mist .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk

@@ -377,7 +377,24 @@ for my $n (@names) {
 ' hardware/lineage/compat/Android.bp
 
  grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
-   
+
+cat >> device/xiaomi/blossom/device.mk << 'EOF'
+
+# System properties for About Phone
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hardware=mt6765 \
+    ro.product.board=blossom \
+    ro.product.platform=mt6765 \
+    ro.processor.brand=MediaTek \
+    ro.processor.model=MT6765 \
+    ro.display.resolution=1080x2340 \
+    ro.display.size=6.3 \
+    ro.battery.capacity=5000 \
+    ro.camera.main.pixels=48 \
+    ro.camera.front.pixels=20
+EOF
+
+cat device/xiaomi/blossom/device.mk
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

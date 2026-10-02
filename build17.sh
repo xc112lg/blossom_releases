@@ -145,6 +145,7 @@ run_evolution() {
     sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+    sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' /tmp/src/android/device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
 
 if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
     echo "Soong memory limit patch already applied, skipping."

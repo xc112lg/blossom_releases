@@ -380,24 +380,56 @@ for my $n (@names) {
 
 cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
-# System properties for About Phone
+# Common Hardware Properties (all variants)
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hardware=mt6765 \
+    ro.board.platform=mt6765 \
+    ro.product.cpu.abi=arm64-v8a \
+    ro.product.cpu.abilist=arm64-v8a,armeabi-v7a,armeabi \
+    ro.display.resolution.width=720 \
+    ro.display.resolution.height=1600 \
+    ro.vendor.sf.lcd_density=269 \
+    ro.vendor.display.lcd_density=269 \
+    ro.product.battery_capacity=5000
+
+# Dandelion (Redmi 9A) - M2006C3LI - Single rear camera
+ifeq ($(TARGET_DEVICE),dandelion)
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.brand=Apple \
-    ro.product.manufacturer=Apple \
-    ro.product.model="iPhone 18 Pro Max Fully Paid" \
-    ro.product.name=iPhone18ProMax \
-    ro.product.device=iPhone18ProMax \
-    ro.product.board=D24 \
-    ro.hardware=apple \
-    ro.product.platform=apple \
-    ro.processor.brand=Apple \
-    ro.processor.model="A20 Pro" \
-    ro.display.resolution=1320x2868 \
-    ro.display.size=6.9 \
-    ro.battery.capacity=5000 \
-    ro.camera.main.pixels=48 \
-    ro.camera.front.pixels=18
+    ro.product.vendor.rear_camera.main="13MP f/2.2" \
+    ro.product.vendor.front_camera="5MP f/2.0"
+endif
+
+# Angelica (Redmi 9C) - M2006C3MG - Dual rear camera ultra-wide
+ifeq ($(TARGET_DEVICE),angelica)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.vendor.rear_camera.main="13MP f/2.2" \
+    ro.product.vendor.rear_camera.aux="5MP f/2.2 ultra-wide" \
+    ro.product.vendor.front_camera="5MP f/2.0"
+endif
+
+# Angelicain (POCO C31) - M211033MI - Dual rear camera macro
+ifeq ($(TARGET_DEVICE),angelicain)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.vendor.rear_camera.main="13MP f/2.2" \
+    ro.product.vendor.rear_camera.aux="2MP f/2.8 macro" \
+    ro.product.vendor.front_camera="5MP f/2.0"
+endif
+
+# Angelican (Redmi 9C NFC) - M2006C3MNG - Dual rear camera ultra-wide + NFC
+ifeq ($(TARGET_DEVICE),angelican)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.vendor.rear_camera.main="13MP f/2.2" \
+    ro.product.vendor.rear_camera.aux="5MP f/2.2 ultra-wide" \
+    ro.product.vendor.front_camera="5MP f/2.0"
+endif
+
+# Cattail (Redmi 9 Activ) - M2006C3MII - Dual rear camera macro
+ifeq ($(TARGET_DEVICE),cattail)
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.vendor.rear_camera.main="13MP f/2.2" \
+    ro.product.vendor.rear_camera.aux="2MP f/2.8 macro" \
+    ro.product.vendor.front_camera="5MP f/2.0"
+endif
 EOF
 
 cat device/xiaomi/blossom/device.mk

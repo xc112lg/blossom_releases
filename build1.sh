@@ -377,18 +377,19 @@ for my $n (@names) {
 ' hardware/lineage/compat/Android.bp
 
  grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
-sed -i 's|\(<string name="platform_title">\)[^<]*\(</string>\)|\1Model\2|' packages/apps/Settings/res-mist/values/mist_strings.xml
+
 cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
 # Common Hardware Properties (all variants)
 PRODUCT_SYSTEM_PROPERTIES += \
+    ro.mist.display=2868 x 1320, 120 hz \
+    ro.mist.battery=5391mah \
     ro.mist.soc=A20 Pro \
-    ro.mist.platform=iPhone 18 Pro Max Fully Paid \
-    ro.mist.display=1320x2868 \
-    ro.mist.screen=OLED Super Retina XDR  \
-    ro.mist.battery=5391 mAh \
-    ro.mist.camera=48 MP \
-    ro.mist.front=18 MP
+    ro.mist.camera=48MP + 48MP + 48MP \
+    ro.mist.front=18MP \
+    ro.mist.platform=A20 Pro \
+    ro.mist.screen=6.9' OLED \
+    ro.mist.device.name=iPhone 18 Pro Max Fully Paid
 EOF
 
 cat device/xiaomi/blossom/device.mk

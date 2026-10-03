@@ -147,6 +147,7 @@ run_evolution() {
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
     sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' /tmp/src/android/device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
     sed -i '/type per_boot_file/d' /tmp/src/android/device/xiaomi/blossom/sepolicy/vendor/file.te
+    sed -i '/per_boot_file/d' /tmp/src/android/device/xiaomi/blossom/sepolicy/vendor/init.te
 if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
     echo "Soong memory limit patch already applied, skipping."
 else

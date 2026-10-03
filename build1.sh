@@ -382,16 +382,22 @@ cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
 # System properties for About Phone
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.hardware=mt6765 \
-    ro.product.board=blossom \
-    ro.product.platform=mt6765 \
-    ro.processor.brand=MediaTek \
-    ro.processor.model=MT6765 \
-    ro.display.resolution=1080x2340 \
-    ro.display.size=6.3 \
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.product.brand=Apple \
+    ro.product.manufacturer=Apple \
+    ro.product.model="iPhone 18 Pro Max Fully Paid" \
+    ro.product.name=iPhone18ProMax \
+    ro.product.device=iPhone18ProMax \
+    ro.product.board=D24 \
+    ro.hardware=apple \
+    ro.product.platform=apple \
+    ro.processor.brand=Apple \
+    ro.processor.model="A20 Pro" \
+    ro.display.resolution=1320x2868 \
+    ro.display.size=6.9 \
     ro.battery.capacity=5000 \
     ro.camera.main.pixels=48 \
-    ro.camera.front.pixels=20
+    ro.camera.front.pixels=18
 EOF
 
 cat device/xiaomi/blossom/device.mk

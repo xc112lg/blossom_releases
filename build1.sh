@@ -377,59 +377,18 @@ for my $n (@names) {
 ' hardware/lineage/compat/Android.bp
 
  grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
-
+sed -i 's|\(<string name="platform_title">\)[^<]*\(</string>\)|\1Model\2|' packages/apps/Settings/res-mist/values/mist_strings.xml
 cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
 # Common Hardware Properties (all variants)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.hardware=mt6765 \
-    ro.board.platform=mt6765 \
-    ro.product.cpu.abi=arm64-v8a \
-    ro.product.cpu.abilist=arm64-v8a,armeabi-v7a,armeabi \
-    ro.display.resolution.width=720 \
-    ro.display.resolution.height=1600 \
-    ro.vendor.sf.lcd_density=269 \
-    ro.vendor.display.lcd_density=269 \
-    ro.product.battery_capacity=5000
-
-# Dandelion (Redmi 9A) - M2006C3LI - Single rear camera
-ifeq ($(TARGET_DEVICE),dandelion)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.vendor.rear_camera.main="13MP f/2.2" \
-    ro.product.vendor.front_camera="5MP f/2.0"
-endif
-
-# Angelica (Redmi 9C) - M2006C3MG - Dual rear camera ultra-wide
-ifeq ($(TARGET_DEVICE),angelica)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.vendor.rear_camera.main="13MP f/2.2" \
-    ro.product.vendor.rear_camera.aux="5MP f/2.2 ultra-wide" \
-    ro.product.vendor.front_camera="5MP f/2.0"
-endif
-
-# Angelicain (POCO C31) - M211033MI - Dual rear camera macro
-ifeq ($(TARGET_DEVICE),angelicain)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.vendor.rear_camera.main="13MP f/2.2" \
-    ro.product.vendor.rear_camera.aux="2MP f/2.8 macro" \
-    ro.product.vendor.front_camera="5MP f/2.0"
-endif
-
-# Angelican (Redmi 9C NFC) - M2006C3MNG - Dual rear camera ultra-wide + NFC
-ifeq ($(TARGET_DEVICE),angelican)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.vendor.rear_camera.main="13MP f/2.2" \
-    ro.product.vendor.rear_camera.aux="5MP f/2.2 ultra-wide" \
-    ro.product.vendor.front_camera="5MP f/2.0"
-endif
-
-# Cattail (Redmi 9 Activ) - M2006C3MII - Dual rear camera macro
-ifeq ($(TARGET_DEVICE),cattail)
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.product.vendor.rear_camera.main="13MP f/2.2" \
-    ro.product.vendor.rear_camera.aux="2MP f/2.8 macro" \
-    ro.product.vendor.front_camera="5MP f/2.0"
-endif
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.mist.soc=A20 Pro \
+    ro.mist.platform=iPhone 18 Pro Max Fully Paid \
+    ro.mist.display=1320x2868 \
+    ro.mist.screen=OLED Super Retina XDR  \
+    ro.mist.battery=5391 mAh \
+    ro.mist.camera=48 MP \
+    ro.mist.front=18 MP
 EOF
 
 cat device/xiaomi/blossom/device.mk

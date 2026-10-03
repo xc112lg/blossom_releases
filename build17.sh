@@ -146,8 +146,27 @@ run_evolution() {
     sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
     sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' /tmp/src/android/device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
-    sed -i '/type per_boot_file/d' /tmp/src/android/device/xiaomi/blossom/sepolicy/vendor/file.te
-    sed -i '/per_boot_file/d' /tmp/src/android/device/xiaomi/blossom/sepolicy/vendor/init.te
+
+D=/tmp/src/android/device/xiaomi/blossom/sepolicy
+# type + labeling already come from the platform; vendor can't see/redeclare it
+sed -i '/per_boot_file/d' $D/vendor/file.te $D/vendor/file_contexts \
+                          $D/vendor/init.te $D/vendor/kernel.te $D/vendor/toolbox.te
+# same rules, but in system_ext private where the type is visible
+cat >> $D/private/init.te <<'EOF'
+
+allow init per_boot_file:file ioctl;
+allowxperm init per_boot_file:file ioctl { F2FS_IOC_SET_PIN_FILE };
+EOF
+cat >> $D/private/kernel.te <<'EOF'
+allow kernel per_boot_file:file r_file_perms;
+EOF
+cat >> $D/private/toolbox.te <<'EOF'
+allow toolbox per_boot_file:dir create_dir_perms;
+allow toolbox per_boot_file:file create_file_perms;
+EOF
+
+
+
 if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
     echo "Soong memory limit patch already applied, skipping."
 else

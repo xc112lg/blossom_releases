@@ -363,6 +363,8 @@ run_mist() {
     git clone https://github.com/xc112lg/blossom_manifest.git -b mist .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    export TARGET_SCREEN_WIDTH=720
+    export TARGET_SCREEN_HEIGHT=1600
     sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk
     perl -0pi -e '
 my @names = (

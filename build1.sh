@@ -380,21 +380,27 @@ for my $n (@names) {
 
  grep -q "OPTION_CHECK_BRACKETS" frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java 2>/dev/null && echo "already patched, skipping" || curl -L https://github.com/Evolution-X/frameworks_base/commit/5fc391bd5ab762123490a83c405d0ed0e23b7802.patch | git -C frameworks/base am
 sed -i 's|\(<string name="text_processor">\)[^<]*\(</string>\)|\1Model\2|' packages/apps/Settings/res-mist/values/mist_strings.xml
-cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
-# Common Hardware Properties (all variants)
-PRODUCT_SYSTEM_PROPERTIES += \
-    ro.mist.display=2868 x 1320, 120 hz \
-    ro.mist.battery=5391mah \
-    ro.mist.soc=iPhone 18 Pro Max Fully Paid \
-    ro.mist.camera=48MP + 48MP + 48MP \
-    ro.mist.front=18MP \
-    ro.mist.platform=A20 Pro \
-    ro.mist.screen=6.9' OLED \
-    ro.mist.device.name=iPhone 18 Pro Max Fully Paid
+[ -n "$(tail -c1 device/xiaomi/blossom/system.prop)" ] && echo >> device/xiaomi/blossom/system.prop
+
+cat >> device/xiaomi/blossom/system.prop << 'EOF'
+
+# Mist About Phone
+ro.mist.display=2868 x 1320, 120 hz
+ro.mist.battery=5391mah
+ro.mist.soc=iPhone 18 Pro Max Fully Paid
+ro.mist.camera=48MP + 48MP + 48MP
+ro.mist.front=18MP
+ro.mist.platform=A20 Pro
+ro.mist.screen=6.9' OLED
+ro.mist.device.name=iPhone 18 Pro Max Fully Paid
 EOF
 
-cat device/xiaomi/blossom/device.mk
+cat device/xiaomi/blossom/system.prop
+
+
+
+
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

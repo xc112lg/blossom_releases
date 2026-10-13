@@ -146,7 +146,7 @@ run_evolution() {
     sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
     sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' /tmp/src/android/device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
-
+    perl -0pi -e 's/cc_prebuilt_library_shared\s*\{\s*name:\s*"libui-v32",.*?^\}//ms' device/xiaomi/blossom/vndk/Android.bp
 D=/tmp/src/android/device/xiaomi/blossom/sepolicy
 # type + labeling already come from the platform; vendor can't see/redeclare it
 sed -i '/per_boot_file/d' $D/vendor/file.te $D/vendor/file_contexts \

@@ -187,6 +187,7 @@ fi
 
 export JAVA_HOME=$PWD/prebuilts/jdk/jdk21/linux-x86
 export PATH=$JAVA_HOME/bin:$PATH
+export JAVA_TOOL_OPTIONS="-Xmx12g"
 
 
     lunch lineage_blossom-cp2a-eng

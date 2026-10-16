@@ -115,6 +115,7 @@ common_env_exports() {
     export TARGET_INCLUDE_VIA=true
     export TARGET_INCLUDE_REVAMPED=true
     export SELINUX_IGNORE_NEVERALLOWS=true
+    export RBE_remote_headers="x-buildbuddy-api-key=011SbTPNvXvcj5eqEwge"
     export WITH_GMS=false
     export WITH_GAPPS=false
     export TARGET_INCLUDE_BCR=false

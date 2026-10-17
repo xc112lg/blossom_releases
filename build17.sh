@@ -762,7 +762,8 @@ Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Builder dont check its own build due to 2Gb device 
+Whoever says i steal my dt, fu** off its just minor bring up to make it work for a17 https://github.com/Inkypen79/android_device_xiaomi_msm8996-common/commit/04d28797653d5074c218aae67d7348bc643e8cac"
 }
 
 run_upload_derpfest() {

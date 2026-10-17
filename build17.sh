@@ -754,8 +754,7 @@ run_upload_evolution() {
         "EvolutionX-16.0" \
         "Evolution-X" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "NFC wont spawn on non NFC variant" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
@@ -763,7 +762,7 @@ Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
 Builder dont check its own build due to 2Gb device 
-Whoever says i steal my dt, fu** off its just minor bring up to make it work for a17 https://github.com/Inkypen79/android_device_xiaomi_msm8996-common/commit/04d28797653d5074c218aae67d7348bc643e8cac"
+Whoever says i steal my dt, fu** off its just minor bring up to make it work for a17 https://tinyurl.com/5xkps6nz"
 }
 
 run_upload_derpfest() {

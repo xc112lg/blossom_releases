@@ -751,17 +751,14 @@ run_upload_evolution() {
     release_and_notify \
         "EvolutionX-16.0-$(date '+%Y%m%d')" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
-        "EvolutionX-16.0" \
+        "EvolutionX-17.0" \
         "Evolution-X" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device 
+Sashi Kernel
+Builder dont check its own build
 Whoever says i steal my dt, fu** off its just minor bring up to make it work for a17 https://tinyurl.com/5xkps6nz"
 }
 
@@ -777,8 +774,6 @@ run_upload_derpfest() {
 Remove font showing up on setting" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
 Builder dont check its own build due to 2Gb device "

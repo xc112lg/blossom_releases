@@ -511,10 +511,10 @@ release_and_notify() {
 zyexro for kernel
 @Yohanyuan for audio fix
 @astechpro20 for msg template
-Yui Onanii, fukiame, @snnbyyds, <a href="http://t.me/Sushrut1101">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
+Yui Onanii, fukiame, @snnbyyds, @Sushrut1101, xiaomi-blossom-dev contributors for base tree
 Thanks to <a href="http://foss.crave.io">crave.io</a> for server
 0kaarun & Yohan Yuan for their help
-Thanks to all other devs
+Crdroid Blossom team
 
 <b>🌐 Stay Updated:</b>
 📢 @xc112lgblossomupdate
@@ -756,10 +756,8 @@ run_upload_evolution() {
         "NFC not working" \
         "NFC wont spawn on non NFC variant" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
 Sashi Kernel
-Builder dont check its own build
-Whoever says i steal my dt, fu** off its just minor bring up to make it work for a17 https://tinyurl.com/5xkps6nz"
+Builder dont check its own build"
 }
 
 run_upload_derpfest() {

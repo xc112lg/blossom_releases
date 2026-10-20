@@ -137,6 +137,9 @@ run_evolution() {
     repo init -u https://github.com/Evolution-X/manifest -b cnb --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    cd build/soong
+    git fetch https://github.com/PixelOS-AOSP/android_build_soong refs/changes/93/10693/2 && git cherry-pick FETCH_HEAD
+    cd -
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false

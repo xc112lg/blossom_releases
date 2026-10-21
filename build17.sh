@@ -296,7 +296,7 @@ run_alphadroid() {
 run_infinity() {
     common_prep
     rm -rf .repo/local_manifests prebuilts/misc/protobuf_vendorcompat
-    repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 16 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
+    repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 17 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
 

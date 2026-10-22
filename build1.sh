@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|shinkai> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|shinkai> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|shinkai) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -836,6 +836,25 @@ Stock Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
+run_upload_shinkai() {
+    stage_artifacts
+    release_and_notify \
+        "Shinkai-$(date '+%Y%m%d')" \
+        "https://github.com/ShinkaiProject.png" \
+        "Shinkai" \
+        "Shinkai" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
@@ -894,6 +913,28 @@ Builder dont check its own build due to 2Gb device "
 }
 
 # ------------------------------------------------------------------------------
+# Variant: Shinkai (manifest: ShinkaiProject/shinkai_manifest, branch hekkaideka)
+# ------------------------------------------------------------------------------
+run_shinkai() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/ShinkaiProject/shinkai_manifest -b hekkaideka --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    # NOTE: verify the lunch product and build target against the Shinkai tree
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_shinkai
+}
+
+# ------------------------------------------------------------------------------
 # Dispatch
 # ------------------------------------------------------------------------------
 load_env
@@ -910,6 +951,7 @@ if [ "$MODE" = "upload" ]; then
         alphadroid) run_upload_alphadroid ;;
         mist)      run_upload_mist ;;
         infinity)  run_upload_infinity ;;
+        shinkai)  run_upload_shinkai ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -924,6 +966,7 @@ else
         alphadroid) run_alphadroid ;;
         mist)      run_mist ;;
         infinity)  run_infinity ;;
+        shinkai)  run_shinkai ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

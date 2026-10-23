@@ -107,6 +107,9 @@ common_prep() {
     rm -rf hardware/pixelworks/interfaces
     sudo apt update >/dev/null 2>&1
     sudo apt install patchelf -y >/dev/null 2>&1
+    
+    git config --global user.name "xc112lg"
+   git config --global user.email "cabreraconte880@gmail.com"
 }
 
 common_env_exports() {

@@ -924,6 +924,7 @@ run_shinkai() {
     repo init -u https://github.com/ShinkaiProject/shinkai_manifest -b hekkaideka --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b main .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/xiaomi/blossom/lineage_blossom.mk
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

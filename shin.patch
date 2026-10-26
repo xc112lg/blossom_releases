@@ -1,0 +1,48 @@
+From 5f2366f2685d6549ab104ed21273acd9c9894db8 Mon Sep 17 00:00:00 2001
+From: xz <dev@localhost>
+Date: Mon, 26 Oct 2026 12:01:23 +0000
+Subject: [PATCH] soong: generator: treat optional kernel vars as empty when
+ unset
+
+---
+ build/soong/generator/variables.go | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/build/soong/generator/variables.go b/build/soong/generator/variables.go
+index 8485f94..f103c2b 100644
+--- a/build/soong/generator/variables.go
++++ b/build/soong/generator/variables.go
+@@ -6,6 +6,20 @@ import (
+ 	"android/soong/android"
+ )
+ 
++// Variables exported to Soong by config/BoardConfigSoong.mk that are
++// legitimately empty on some devices or build setups. Make does not export
++// an empty value, so Soong sees them as unset. Expand them to "" instead of
++// leaving $(NAME) behind, which later fails with "unknown variable".
++var lineageOptionalVars = map[string]bool{
++	"KERNEL_BUILD_OUT_PREFIX":        true,
++	"KERNEL_CROSS_COMPILE":           true,
++	"KERNEL_PATH":                    true,
++	"PATH_OVERRIDE_SOONG":            true,
++	"TARGET_KERNEL_PLATFORM_TARGET":  true,
++	"TARGET_KERNEL_SOURCE":           true,
++	"TARGET_PREBUILT_KERNEL_HEADERS": true,
++}
++
+ func lineageExpandVariables(ctx android.ModuleContext, in string) string {
+ 	lineageVars := ctx.Config().VendorConfig("lineageVarsPlugin")
+ 
+@@ -13,6 +27,9 @@ func lineageExpandVariables(ctx android.ModuleContext, in string) string {
+ 		if lineageVars.IsSet(name) {
+ 			return lineageVars.String(name), nil
+ 		}
++		if lineageOptionalVars[name] {
++			return "", nil
++		}
+ 		// This variable is not for us, restore what the original
+ 		// variable string will have looked like for an Expand
+ 		// that comes later.
+-- 
+2.43.0
+

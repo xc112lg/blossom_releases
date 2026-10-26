@@ -1,17 +1,17 @@
-From 5f2366f2685d6549ab104ed21273acd9c9894db8 Mon Sep 17 00:00:00 2001
+From 9928d8c2440eee325ddbdb8c81bd50b08dbc80b1 Mon Sep 17 00:00:00 2001
 From: xz <dev@localhost>
-Date: Mon, 26 Oct 2026 12:01:23 +0000
+Date: Mon, 26 Oct 2026 12:05:22 +0000
 Subject: [PATCH] soong: generator: treat optional kernel vars as empty when
  unset
 
 ---
- build/soong/generator/variables.go | 17 +++++++++++++++++
+ .../lineage/build/soong/generator/variables.go  | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
-diff --git a/build/soong/generator/variables.go b/build/soong/generator/variables.go
+diff --git a/vendor/lineage/build/soong/generator/variables.go b/vendor/lineage/build/soong/generator/variables.go
 index 8485f94..f103c2b 100644
---- a/build/soong/generator/variables.go
-+++ b/build/soong/generator/variables.go
+--- a/vendor/lineage/build/soong/generator/variables.go
++++ b/vendor/lineage/build/soong/generator/variables.go
 @@ -6,6 +6,20 @@ import (
  	"android/soong/android"
  )
@@ -45,4 +45,3 @@ index 8485f94..f103c2b 100644
  		// that comes later.
 -- 
 2.43.0
-

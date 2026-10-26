@@ -926,7 +926,8 @@ run_shinkai() {
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/custom/config/common_full_phone.mk)#' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SHINKAI_MAINTAINER := "xc112lg"' device/xiaomi/blossom/BoardConfig.mk
-    curl -fsSL "https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/shin.patch" | git apply -v
+  #  curl -fsSL "https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/shin.patch" | git apply -v
+    sed -i -e '$a\' -e 'include vendor/lineage/config/BoardConfigLineage.mk' device/xiaomi/blossom/BoardConfig.mk
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

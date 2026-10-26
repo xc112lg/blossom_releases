@@ -928,6 +928,7 @@ run_shinkai() {
     sed -i '$a SHINKAI_MAINTAINER := "xc112lg"' device/xiaomi/blossom/BoardConfig.mk
   #  curl -fsSL "https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/shin.patch" | git apply -v
     sed -i -e '$a\' -e 'include vendor/lineage/config/BoardConfigLineage.mk' device/xiaomi/blossom/BoardConfig.mk
+    sed -i '16,18d' /device/xiaomi/blossom/sepolicy/vendor/vendor_init.te && sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' /device/xiaomi/blossom/sepolicy/vendor/hal_power_default.te && sed -i '8,11d' /device/xiaomi/blossom/sepolicy/vendor/init.te && sed -i '/^    mount none \/vendor\/bin\/volte_/d' /device/xiaomi/blossom/rootdir/etc/init.angelica.volte.rc /device/xiaomi/blossom/rootdir/etc/init.angelican.volte.rc /device/xiaomi/blossom/rootdir/etc/init.angelicain.volte.rc /device/xiaomi/blossom/rootdir/etc/init.cattail.volte.rc
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false

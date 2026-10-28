@@ -933,7 +933,7 @@ run_shinkai() {
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     common_env_exports
-
+if grep -q 'ro\.custom\.device=\$(CUSTOM_BUILD)' /tmp/src/android/vendor/custom/config/version.mk; then sed -i '/ro\.custom\.device=\$(CUSTOM_BUILD)/d' /tmp/src/android/vendor/custom/config/version.mk && echo "removed"; else echo "line not present, nothing to do"; fi
     # NOTE: verify the lunch product and build target against the Shinkai tree
     lunch lineage_blossom-bp4a-user
     m installclean

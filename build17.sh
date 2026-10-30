@@ -304,6 +304,13 @@ export WITH_ADB_INSECURE=true
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
     cat build/soong/scripts/gen_build_prop.py
+   
+    F=vendor/xiaomi/blossom/Android.bp
+grep -A4 'name: "mediatek-telephony-common",' "$F" | grep -q dex_preopt || sed -i '/name: "mediatek-telephony-common",/,/jars:/{/jars:/a\
+\tdex_preopt: {\
+\t\tenabled: false,\
+\t},
+}' "$F"
     # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
     # sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     # sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml

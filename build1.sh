@@ -740,7 +740,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -759,7 +759,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -778,7 +778,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -797,7 +797,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -816,7 +816,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -835,7 +835,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -854,7 +854,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -866,14 +866,14 @@ run_upload_lineage() {
         "Lineage-23.2" \
         "lineage-23.2" \
         "NFC not working
-Cant change to Stock Kernel
+Cant change to Sashimi Kernel
 Builder dont check its own build due to 2Gb device " \
         "NFC wont spawn on non NFC variant" \
         "Debloated
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -892,7 +892,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 
@@ -911,7 +911,7 @@ Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
-Stock Kernel
+Sashimi Kernel
 Builder dont check its own build due to 2Gb device "
 }
 

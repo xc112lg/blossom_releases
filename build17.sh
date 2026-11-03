@@ -35,8 +35,8 @@ TARGET="${1:-}"
 MODE="${2:-build}"
 
 usage() {
-    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
-    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity> [build|upload]"
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos> [build|upload]"
     echo ""
     echo "  build   (default) run the full pipeline: build + stage + release + notify"
     echo "  upload  skip the build, only stage + release + notify using whatever is"
@@ -47,7 +47,7 @@ usage() {
 [ -z "$TARGET" ] && usage
 
 case "$TARGET" in
-    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity) ;;
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos) ;;
     *)
         echo "✗ Unknown target: '$TARGET'"
         usage
@@ -500,6 +500,44 @@ for my $n (@names) {
     mist b
 
     run_upload_mist
+}
+
+# ------------------------------------------------------------------------------
+# Variant: PenguinOS
+# ------------------------------------------------------------------------------
+run_penguinos() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/Project-PenguinOS/manifest.git -b 16.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    ./rom-build.sh blossom
+
+
+    run_upload_penguinos
+}
+
+run_upload_penguinos() {
+    stage_artifacts
+    release_and_notify \
+        "PenguinOS-16.2-$(date '+%Y%m%d')" \
+        "https://github.com/Project-PenguinOS.png" \
+        "PenguinOS 16.2" \
+        "PenguinOS" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
 }
 
 
@@ -989,6 +1027,7 @@ if [ "$MODE" = "upload" ]; then
         alphadroid) run_upload_alphadroid ;;
         mist)      run_upload_mist ;;
         infinity)  run_upload_infinity ;;
+        penguinos) run_upload_penguinos ;;
     esac
     echo "✓ Finished blossom upload-only: $TARGET"
 else
@@ -1003,6 +1042,7 @@ else
         alphadroid) run_alphadroid ;;
         mist)      run_mist ;;
         infinity)  run_infinity ;;
+        penguinos) run_penguinos ;;
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi

@@ -508,7 +508,7 @@ for my $n (@names) {
 run_penguinos() {
     common_prep
     rm -rf .repo/local_manifests
-    repo init -u https://github.com/Project-PenguinOS/manifest.git -b 16.2 --git-lfs --depth=1
+    repo init -u https://github.com/Project-PenguinOS/manifest.git -b celerity  --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     . build/envsetup.sh

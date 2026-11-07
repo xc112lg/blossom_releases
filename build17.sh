@@ -592,7 +592,7 @@ release_and_notify() {
 
 <b>Device:</b>Blossom
 <b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
-<b>🤖 Android Version:</b> 16 | QPR2
+<b>🤖 Android Version:</b> 17
 <b>📅 Build Date:</b> {{BUILD_DATE}}
 <b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
 <b>📸 <a href="https://t.me/xc112lgblossomsc">Screenshots</a></b>
@@ -602,7 +602,7 @@ release_and_notify() {
 <b>🐞 Issues:</b>
 {{ISSUES}}
 
-<b>🐞 Fixes:</b>
+<b>🐞 Changes:</b>
 {{FIXES}}
 
 <b>📝 Notes:</b>
@@ -857,7 +857,7 @@ run_upload_evolution() {
         "EvolutionX-17.0" \
         "Evolution-X" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant" \
+        "Drop NFC completly" \
         "Debloated
 Sashi Kernel
 Builder dont check its own build"

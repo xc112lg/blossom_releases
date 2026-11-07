@@ -78,6 +78,8 @@ setup_git_auth() {
     git config --global --unset-all http.https://github.com/.extraHeader 2>/dev/null || true
     git config --global http.https://github.com/.extraHeader \
         "Authorization: Basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64)"
+    git config --global user.email "cabreraconte880@gmail.com"
+    git config --global user.name "xc112lg"
 }
 
 load_env() {

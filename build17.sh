@@ -756,9 +756,9 @@ TEMPLATE
         DOWNLOADS_SECTION+="
 🔹 ${label} - ${download_links} (${size})"
         DOWNLOADS_SECTION+="
-🔹 🎯 GApps Package <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
+🔹 🎯 GApps Package <a href=\"https://t.me/xc112lgblossomupdate1/897/\">Bitgapps</a>"
     done
-
+    
     DOWNLOADS_SECTION+="
 
 

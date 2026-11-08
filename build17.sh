@@ -351,6 +351,18 @@ fi
 sed -n '24,26p' "$F"
 
 
+DM=device/xiaomi/blossom/device.mk
+
+if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
+    echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
+else
+    sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
+    echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
+fi
+
+grep -n 'VINTF' "$DM"
+
+
 
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then

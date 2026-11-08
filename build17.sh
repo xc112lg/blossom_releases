@@ -363,6 +363,8 @@ fi
 grep -n 'VINTF' "$DM"
 
 
+sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
+
 
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then

@@ -339,6 +339,18 @@ sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
 sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
 
 
+F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
+
+if grep -q '^public final class IsimFileHandler extends IccFileHandler' "$F"; then
+    sed -i 's/^public final class IsimFileHandler extends IccFileHandler/public class IsimFileHandler extends IccFileHandler/' "$F"
+    echo "patched IsimFileHandler"
+else
+    echo "skip: IsimFileHandler already fixed"
+fi
+
+sed -n '24,26p' "$F"
+
+
 
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then

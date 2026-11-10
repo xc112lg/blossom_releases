@@ -1077,3 +1077,6 @@ else
     esac
     echo "✓ Finished blossom build: $TARGET"
 fi
+
+rm -rf .env device/xiaomi
+ls device

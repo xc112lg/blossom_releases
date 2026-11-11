@@ -119,7 +119,7 @@ common_env_exports() {
     export INFINITY_MAINTAINER=xc112lg
     export TARGET_DISABLE_EPPE=true
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
-    
+    rm -rf out/soong/.intermediates/build/soong/product-build.prop
 #!/bin/bash
 F=/mnt/data/rom/device/axion/common/config/version.mk
 

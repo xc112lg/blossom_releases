@@ -1,0 +1,1067 @@
+#!/bin/bash
+# ==============================================================================
+# blossom superscript — unified build + release dispatcher for Xiaomi "blossom"
+#
+# Usage:
+#   ./build.sh lunaris     # or lineage / evolution / axion / crdroid
+#   ./build.sh axion upload   # skip the build, only stage + release + notify
+#                              # (uses whatever is already in out/target/product/*/*.zip)
+#   curl -sf <raw-url-to-this-file> | bash -s lunaris
+#   curl -sf <raw-url-to-this-file> | bash -s -- lineage
+#
+# One script now does the whole pipeline per target (build → package → GitHub
+# release → Telegram announce), merging what used to be build.sh + upload.sh
+# (itself a merge of upevo.sh + multi_upload3.sh):
+#   1. Build the ROM (Lunaris AOSP / LineageOS / Evolution X / AxionAOSP /
+#      crDroid) for device "blossom". crDroid builds on the AxionAOSP source
+#      tree with crDroid's cr_config.xml feature-flag overlays layered on top.
+#   2. Stage the resulting zip/img/tar into the blossom_releases repo
+#   3. Create/replace the GitHub release + tag and upload the artifacts
+#   4. Send the Telegram announcement (Telegraph changelog + image fallback)
+#
+# All five ROMs release into ONE shared GitHub repo: blossom_releases
+# (must already exist on GitHub under xc112lg). Each ROM keeps its own
+# release tag/version string (e.g. LunarisAOSP-20260712, lineage-23.2-...,
+# EvolutionX-16.0-..., AxionAOSP-..., crDroid-...) so releases never collide
+# in the shared repo.
+#
+# Override the release repo without editing the script:
+#   RELEASE_REPO=some_other_repo ./build.sh lunaris
+# ==============================================================================
+#set -euo pipefail
+shopt -s nullglob
+
+TARGET="${1:-}"
+MODE="${2:-build}"
+
+usage() {
+    echo "Usage: $0 <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos> [build|upload]"
+    echo "   or: curl -sf <url> | bash -s <lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos> [build|upload]"
+    echo ""
+    echo "  build   (default) run the full pipeline: build + stage + release + notify"
+    echo "  upload  skip the build, only stage + release + notify using whatever is"
+    echo "          already in out/target/product/*/*.zip"
+    exit 1
+}
+
+[ -z "$TARGET" ] && usage
+
+case "$TARGET" in
+    lunaris|lineage|evolution|axion|crdroid|derpfest|alphadroid|mist|infinity|penguinos) ;;
+    *)
+        echo "✗ Unknown target: '$TARGET'"
+        usage
+        ;;
+esac
+
+case "$MODE" in
+    build|upload) ;;
+    *)
+        echo "✗ Unknown mode: '$MODE'"
+        usage
+        ;;
+esac
+
+# ------------------------------------------------------------------------------
+# Shared setup (identical across all three variants)
+# ------------------------------------------------------------------------------
+
+# Configure git to authenticate against github.com via a request header
+# instead of embedding the token in the URL. URL-embedded tokens get stripped
+# by git on GitHub's redirect (https://github.com/... → https://github.com/.../),
+# which is why we were getting "Username for 'https://github.com':" prompts.
+# The header survives redirects and applies to every git/repo operation.
+setup_git_auth() {
+    [ -z "${GH_TOKEN:-}" ] && return
+    git config --global --unset-all url."https://github.com/".insteadOf 2>/dev/null || true
+    git config --global --unset-all url."https://${GH_TOKEN}@github.com/".insteadOf 2>/dev/null || true
+    git config --global --unset-all http.https://github.com/.extraHeader 2>/dev/null || true
+    git config --global http.https://github.com/.extraHeader \
+        "Authorization: Basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64)"
+    git config --global user.email "cabreraconte880@gmail.com"
+    git config --global user.name "xc112lg"
+}
+
+load_env() {
+    if [ -f .env ]; then
+        export $(cat .env | grep -v '#' | xargs)
+    elif [ -f ../.env ]; then
+        export $(cat ../.env | grep -v '#' | xargs)
+    else
+        echo "missing .env"
+        exit 1
+    fi
+    # Runs in both build and upload modes — ensures auth is set before any
+    # git clone / git push, even when common_prep() is skipped (upload mode).
+    setup_git_auth
+}
+
+common_prep() {
+    load_env
+    setup_git_auth
+
+    # sudo apt update >/dev/null 2>&1
+    # sudo apt install patchelf -y >/dev/null 2>&1
+}
+
+common_env_exports() {
+    export TARGET_USES_PICO_GAPPS=true
+    export TARGET_INCLUDE_VIA=true
+    export TARGET_INCLUDE_REVAMPED=true
+    export SELINUX_IGNORE_NEVERALLOWS=true
+    export RBE_remote_headers="x-buildbuddy-api-key=011SbTPNvXvcj5eqEwge"
+    export WITH_GMS=false
+    export WITH_GAPPS=false
+    export TARGET_INCLUDE_BCR=false
+    export TARGET_PREBUILT_BCR=false
+    export TARGET_ENABLE_BLUR=true
+    export AXION_MAINTAINER=xc112lg
+    export ALPHA_MAINTAINER="xc112lg | How's Your Day"
+    export MISTOS_MAINTAINER="xc112lg"
+    export INFINITY_MAINTAINER=xc112lg
+    sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
+}
+
+# ------------------------------------------------------------------------------
+# Variant: Evolution X
+# ------------------------------------------------------------------------------
+run_evolution() {
+   
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+export WITH_ADB_INSECURE=true 
+grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
+sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+    cat build/soong/scripts/gen_build_prop.py
+    # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
+    # sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+    sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
+    perl -0pi -e 's/cc_prebuilt_library_shared\s*\{\s*name:\s*"libui-v32",.*?^\}//ms' device/xiaomi/blossom/vndk/Android.bp
+D=device/xiaomi/blossom/sepolicy
+# type + labeling already come from the platform; vendor can't see/redeclare it
+sed -i '/per_boot_file/d' $D/vendor/file.te $D/vendor/file_contexts \
+                          $D/vendor/init.te $D/vendor/kernel.te $D/vendor/toolbox.te
+# same rules, but in system_ext private where the type is visible
+cat >> $D/private/init.te <<'EOF'
+
+allow init per_boot_file:file ioctl;
+allowxperm init per_boot_file:file ioctl { F2FS_IOC_SET_PIN_FILE };
+EOF
+cat >> $D/private/kernel.te <<'EOF'
+allow kernel per_boot_file:file r_file_perms;
+EOF
+cat >> $D/private/toolbox.te <<'EOF'
+allow toolbox per_boot_file:dir create_dir_perms;
+allow toolbox per_boot_file:file create_file_perms;
+EOF
+
+SP=device/xiaomi/blossom/sepolicy/vendor
+
+sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
+sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
+sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
+sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
+
+# if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
+#     echo "Soong memory limit patch already applied, skipping."
+# else
+#     curl -Ls https://github.com/yaap-17-stone/build_soong/commit/f9c27b0b9298f6eeee9a850346e0a646c3eaeb87.patch | \
+#         git -C build/soong am
+# fi
+
+
+
+
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
+/usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
+
+
+
+    lunch lineage_blossom-cp2a-user
+    m installclean
+    m evolution
+
+    run_upload_evolution
+}
+
+# ------------------------------------------------------------------------------
+# Variant: DerpFest
+# ------------------------------------------------------------------------------
+run_derpfest() {
+    common_prep
+    rm -rf .repo/local_manifests vendor/lineage
+    repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --git-lfs --depth 1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    sed -i '/^LOCAL_PATH := vendor\/overlay\/fonts$/,/^    FontGoogleSansFlexRegularOverlay$/d' vendor/overlay/overlays.mk
+    sed -i '\|include vendor/fontage/config.mk|d' vendor/lineage/config/derpfest.mk
+    sed -i '/Chrome\/Chrome\.apk\.gz/d;/TrichromeLibrary\/TrichromeLibrary\.apk\.gz/d' vendor/gms/common/common-vendor.mk
+    . build/envsetup.sh
+
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    mka derp
+
+    run_upload_derpfest
+}
+
+# ------------------------------------------------------------------------------
+# Variant: crDroid (built on the AxionAOSP/lineage-23.2 source tree, with
+# crDroid's feature-flag overlay files layered on top — same overlay paths
+# crDroid's own docs use when adding cr_config.xml onto a non-crDroid tree)
+# ------------------------------------------------------------------------------
+run_crdroid() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values
+    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values/cr_config.xml \
+        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/core/res/res/values/cr_config.xml
+
+    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values
+    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
+        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
+    sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
+    sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_crdroid
+}
+
+# ------------------------------------------------------------------------------
+# Variant: AlphaDroid
+# ------------------------------------------------------------------------------
+run_alphadroid() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/alphadroid-project/manifest -b alpha-16.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    sed -i 's/lineage_blossom/alpha_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
+    sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := alpha_blossom/' device/xiaomi/blossom/lineage_blossom.mk
+    sed -i 's|vendor/lineage/|vendor/alpha/|g' device/xiaomi/blossom/lineage_blossom.mk
+    grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
+    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/alpha_blossom.mk
+    git clone https://github.com/AlphaDroid-Project/hardware_pixelworks_interfaces -b alpha-16.2 hardware/pixelworks/interfaces --depth 1
+    sed -i '/^    hardware\/google\/interfaces \\$/a\    hardware/pixelworks/interfaces \\' device/xiaomi/blossom/device.mk
+    #sed -i "\$a ro.alpha.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    breakfast blossom
+    m installclean
+    brunch blossom
+
+    run_upload_alphadroid
+}
+
+# ------------------------------------------------------------------------------
+# Variant: ProjectInfinity-X
+# ------------------------------------------------------------------------------
+run_infinity() {
+    common_prep
+    rm -rf .repo/local_manifests prebuilts/misc/protobuf_vendorcompat
+    repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 17 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+
+export WITH_ADB_INSECURE=true 
+grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
+sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+    cat build/soong/scripts/gen_build_prop.py
+   
+    # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
+    # sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+    sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
+    perl -0pi -e 's/cc_prebuilt_library_shared\s*\{\s*name:\s*"libui-v32",.*?^\}//ms' device/xiaomi/blossom/vndk/Android.bp
+D=device/xiaomi/blossom/sepolicy
+# type + labeling already come from the platform; vendor can't see/redeclare it
+sed -i '/per_boot_file/d' $D/vendor/file.te $D/vendor/file_contexts \
+                          $D/vendor/init.te $D/vendor/kernel.te $D/vendor/toolbox.te
+# same rules, but in system_ext private where the type is visible
+cat >> $D/private/init.te <<'EOF'
+
+allow init per_boot_file:file ioctl;
+allowxperm init per_boot_file:file ioctl { F2FS_IOC_SET_PIN_FILE };
+EOF
+cat >> $D/private/kernel.te <<'EOF'
+allow kernel per_boot_file:file r_file_perms;
+EOF
+cat >> $D/private/toolbox.te <<'EOF'
+allow toolbox per_boot_file:dir create_dir_perms;
+allow toolbox per_boot_file:file create_file_perms;
+EOF
+
+SP=device/xiaomi/blossom/sepolicy/vendor
+
+sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
+sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
+sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
+sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
+
+
+F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
+
+if grep -q '^public final class IsimFileHandler extends IccFileHandler' "$F"; then
+    sed -i 's/^public final class IsimFileHandler extends IccFileHandler/public class IsimFileHandler extends IccFileHandler/' "$F"
+    echo "patched IsimFileHandler"
+else
+    echo "skip: IsimFileHandler already fixed"
+fi
+
+sed -n '24,26p' "$F"
+
+
+DM=device/xiaomi/blossom/device.mk
+
+if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
+    echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
+else
+    sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
+    echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
+fi
+
+grep -n 'VINTF' "$DM"
+
+
+sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
+
+echo 'SKIP_VINTF_COMPAT_CHECK := true' >> device/xiaomi/blossom/BoardConfig.mk
+
+# if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
+#     echo "Soong memory limit patch already applied, skipping."
+# else
+#     curl -Ls https://github.com/yaap-17-stone/build_soong/commit/f9c27b0b9298f6eeee9a850346e0a646c3eaeb87.patch | \
+#         git -C build/soong am
+# fi
+
+if grep -q 'debug.SetMemoryLimit(55 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
+    echo "Soong memory limit patch already applied, skipping."
+else
+    curl -Ls https://github.com/xc112lg/build_soong/commit/79778bd182d3d06aadf8be9e6d8b3abae15bdb77.patch | \
+        git -C build/soong am
+fi
+
+
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
+/usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
+
+
+
+
+
+
+    sed -i 's/lineage_blossom/infinity_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
+    sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := infinity_blossom/' device/xiaomi/blossom/lineage_blossom.mk
+    grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
+    mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/infinity_blossom.mk
+    sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/infinity/config/common_full_phone.mk)#' device/xiaomi/blossom/infinity_blossom.mk
+    sed -i '$a INFINITY_MAINTAINER := "xc112lg"' device/xiaomi/blossom/BoardConfig.mk
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    lunch infinity_blossom-user
+    m installclean
+    m bacon
+
+    run_upload_infinity
+}
+
+# ------------------------------------------------------------------------------
+# Variant: LineageOS
+# ------------------------------------------------------------------------------
+run_lineage() {
+    common_prep
+    rm -rf vendor/lineage
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+
+    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/b8a9f24f9ff6e8de021fa33fc65520571fcf7478.patch | git -C hardware/mediatek am
+    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/8c779b742a41bfd89376933722c5232ba7b1731f.patch | git -C hardware/mediatek am
+
+    export WITH_SU=true
+    export WITH_GMS=false
+    export EVO_BUILD_TYPE=Unofficial
+
+    sed -i 's|tar xfp $PARAM_BOOTANIMATION_TAR -C $INTERMEDIATES|python3 -c "import tarfile; tarfile.open(\\"$PARAM_BOOTANIMATION_TAR\\").extractall(path=\\"$INTERMEDIATES\\")"|' vendor/lineage/bootanimation/gen-bootanimation.sh
+    sed -i '/Command:.*buildFlagInternal/c\            Command: `${buildFlagInternal} --maps-file ${in} --quiet --declarations-only get && : > ${out}`,' build/soong/aconfig/build_flags/init.go
+    sed -i '/^import subprocess$/a from datetime import datetime, timezone' build/soong/scripts/gen_build_prop.py && sed -i '/config\["Date"\] = subprocess.check_output/,/config\["DateUtc"\] = subprocess.check_output/c\  dt = datetime.fromtimestamp(int(raw_date), timezone.utc)\n  config["Date"] = dt.strftime("%a %b %d %H:%M:%S UTC %Y")\n  config["DateUtc"] = str(int(raw_date))' build/soong/scripts/gen_build_prop.py
+
+    common_env_exports
+
+    export RBE_LOG=DEBUG
+    export RBE_VERBOSE=1
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_lineage
+}
+
+# ------------------------------------------------------------------------------
+# Variant: Lunaris AOSP
+# ------------------------------------------------------------------------------
+run_lunaris() {
+    common_prep
+    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
+    repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    export ro.lunaris.maintainer=xc112lg
+    common_env_exports
+    sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
+
+    lunch lineage_blossom-bp4a-user
+    m installclean
+    m bacon
+
+    run_upload_lunaris
+}
+
+# ------------------------------------------------------------------------------
+# Variant: AxionAOSP
+# ------------------------------------------------------------------------------
+run_axion() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/AxionAOSP/android.git -b lineage-23.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    . build/envsetup.sh
+    sed -i '/^cc_prebuilt_library_shared {$/{N;/name: "libutils-v30",/{:a;N;/\n}$/!ba;d}}' hardware/lineage/compat/Android.bp
+    sed -i '$a AXION_MAINTAINER := xc112lg' device/xiaomi/blossom/lineage_blossom.mk
+    common_env_exports
+    export TARGET_IS_LOW_RAM=true
+    #lunch lineage_blossom-bp4a-user
+   # m installclean
+    axion blossom user va
+    m installclean
+    ax -br
+    run_upload_axion
+}
+
+# ------------------------------------------------------------------------------
+# Variant: MistOS
+# ------------------------------------------------------------------------------
+run_mist() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/Project-Mist-OS/manifest.git -b 16.2 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    sed -i '$a MISTOS_MAINTAINER := "xc112lg"' device/xiaomi/blossom/lineage_blossom.mk
+    perl -0pi -e '
+my @names = (
+  "libprotobuf-cpp-full-3.9.1-vendorcompat",
+  "libprotobuf-cpp-lite-3.9.1-vendorcompat",
+  "libprotobuf-cpp-full-21.12-vendorcompat",
+  "libprotobuf-cpp-lite-21.12-vendorcompat",
+);
+for my $n (@names) {
+    s/\n[a-z_]+\s*\{(?:[^{}]|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})*name:\s*"\Q$n\E"(?:[^{}]|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})*\}\n/\n/s;
+}
+' hardware/lineage/compat/Android.bp
+   
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    export TARGET_USES_MINI_GAPPS=false
+    export TARGET_SUPPORTS_QUICK_TAP=true
+    export BYPASS_CHARGE_SUPPORTED=true
+    common_env_exports
+
+    mistify blossom user
+    m installclean
+    mist b
+
+    run_upload_mist
+}
+
+# ------------------------------------------------------------------------------
+# Variant: PenguinOS
+# ------------------------------------------------------------------------------
+run_penguinos() {
+    common_prep
+    rm -rf .repo/local_manifests
+    repo init -u https://github.com/Project-PenguinOS/manifest.git -b celerity  --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
+    curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    . build/envsetup.sh
+    export WITH_GMS=false
+    export TARGET_INCLUDE_BCR=false
+    common_env_exports
+
+    ./rom-build.sh blossom
+
+
+    run_upload_penguinos
+}
+
+run_upload_penguinos() {
+    stage_artifacts
+    release_and_notify \
+        "PenguinOS-16.2-$(date '+%Y%m%d')" \
+        "https://github.com/Project-PenguinOS.png" \
+        "PenguinOS 16.2" \
+        "PenguinOS" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+
+# ------------------------------------------------------------------------------
+# Stage 1 (equivalent of upevo.sh): clone the target repo and copy build output
+# into it. Sets STAGE_DIR to the directory to cd into for stage 2.
+# ------------------------------------------------------------------------------
+stage_artifacts() {
+    local repo="${RELEASE_REPO:-blossom_releases}"
+
+    local built_zips=(out/target/product/*/*.zip)
+    if [ ${#built_zips[@]} -eq 0 ]; then
+        echo "✗ No built zip found under out/target/product/*/ — did the build succeed?"
+        exit 1
+    fi
+
+    rm -rf "$repo"
+    git clone -q "https://github.com/xc112lg/${repo}" >/dev/null 2>&1
+
+    cp out/target/product/*/*.zip "$repo/"
+    cp out/target/product/*/*.tar "$repo/" 2>/dev/null || true
+
+    cd "$repo"
+
+    # lineage's upevo.sh drops the stock recovery/OTA package before uploading
+    if [ "$TARGET" = "lineage" ] || [ "$TARGET" = "axion" ]; then
+        rm -f *-ota.zip
+    fi
+}
+
+# ------------------------------------------------------------------------------
+# Stage 2 (equivalent of multi_upload3.sh): GitHub release + Telegram notify.
+# Only the handful of fields that actually differ between ROMs (title, banner,
+# issues/fixes/notes bullets, hashtag) are passed in — everything else in the
+# Telegram message comes from the one shared TEMPLATE below.
+# ------------------------------------------------------------------------------
+release_and_notify() {
+    local version_default="$1"
+    local banner_image="$2"
+    local title="$3"
+    local hashtag="$4"
+    local issues="$5"
+    local fixes="$6"
+    local notes="$7"
+    local github_repo_default="${RELEASE_REPO:-blossom_releases}"
+
+    local telegram_message
+    read -r -d '' telegram_message << TEMPLATE || true
+<b>{{TITLE}} | UNOFFICIAL📱</b>
+
+<b>Device:</b>Blossom
+<b>👨‍💻 Builder:</b> <a href="http://t.me/xc112lg">xc112lg</a>
+<b>🤖 Android Version:</b> 17
+<b>📅 Build Date:</b> {{BUILD_DATE}}
+<b>⚙️ <a href="{{CHANGELOG_URL}}">Changelog</a></b>
+<b>📸 <a href="https://t.me/xc112lgblossomsc">Screenshots</a></b>
+
+{{DOWNLOADS_SECTION}}
+
+<b>🐞 Issues:</b>
+{{ISSUES}}
+
+<b>🐞 Changes:</b>
+{{FIXES}}
+
+<b>📝 Notes:</b>
+{{NOTES}}
+
+<b>❤️ Credits & Thanks:</b>
+@HaiKitoo and 0kaarun for trees
+zyexro for kernel
+@Yohanyuan for audio fix
+@astechpro20 for msg template
+Yui Onanii, fukiame, @snnbyyds, @Sushrut1101, xiaomi-blossom-dev contributors for base tree
+kudos to crave.io 
+@Anna_Choudhary for the build server
+0kaarun & Yohan Yuan for their help
+Crdroid Blossom team
+
+<b>🌐 Stay Updated:</b>
+📢 @xc112lgblossomupdate
+📢 @xc112lgblossomupdate1
+
+#blossom #UNOFFICIAL #{{HASHTAG}} #lunaridolby #Rom
+TEMPLATE
+
+    telegram_message="${telegram_message//\{\{TITLE\}\}/$title}"
+    telegram_message="${telegram_message//\{\{HASHTAG\}\}/$hashtag}"
+    telegram_message="${telegram_message//\{\{ISSUES\}\}/$issues}"
+    telegram_message="${telegram_message//\{\{FIXES\}\}/$fixes}"
+    telegram_message="${telegram_message//\{\{NOTES\}\}/$notes}"
+
+    export LC_ALL=en_US.UTF-8
+    export LANG=en_US.UTF-8
+
+    if ! command -v gh &> /dev/null; then
+        echo "GitHub CLI 'gh' not found. Downloading and installing..."
+        wget -q https://github.com/cli/cli/releases/download/v2.40.1/gh_2.40.1_linux_amd64.tar.gz
+        tar -xf gh_2.40.1_linux_amd64.tar.gz
+        sudo mv gh_*_linux_amd64/bin/gh /usr/local/bin/ >/dev/null 2>&1
+        echo "GitHub CLI 'gh' installed successfully."
+    else
+        echo "GitHub CLI 'gh' is already installed."
+    fi
+
+    if ! gh auth status &> /dev/null; then
+        gh auth login --with-token "$GH_TOKEN" >/dev/null 2>&1
+    else
+        echo "Already authenticated with GitHub."
+    fi
+
+    local version="${custom_version:-$version_default}"
+
+    if gh release view "$version" &> /dev/null; then
+        echo "Deleting existing tag and releases for $version..."
+        gh release delete "$version" --yes >/dev/null 2>&1 || true
+        git tag -d "$version" >/dev/null 2>&1 || true
+        git push origin --delete "$version" >/dev/null 2>&1 || true
+        echo "Existing tag and releases deleted."
+    fi
+
+    git tag -a "$version" -m "Release $version"
+    git push origin "$version" --force -q >/dev/null 2>&1
+
+    declare -a filenames
+    filenames=(*.zip *.img *.txt *.json)
+
+    if ! gh release create "$version" --title "Release $version" --notes "Release notes" >/dev/null 2>&1; then
+        echo "Error: Failed to create the release."
+        exit 1
+    fi
+
+    for filename in "${filenames[@]}"; do
+        if ! gh release upload "$version" "$filename" --clobber >/dev/null 2>&1; then
+            echo "⚠ Failed to upload $filename — continuing"
+        fi
+    done
+
+    echo "Files uploaded successfully."
+
+    # ============================================
+    # TELEGRAM NOTIFICATION
+    # ============================================
+    echo "Preparing to send Telegram notification..."
+
+    local RELEASE_TAG="$version"
+    local GITHUB_REPO="${GITHUB_REPO:-$github_repo_default}"
+
+    declare -a FILE_ENTRIES
+    for filename in "${filenames[@]}"; do
+        if [ -f "$filename" ]; then
+            local download_url="https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$RELEASE_TAG/$filename"
+            local file_size
+            file_size=$(du -h "$filename" 2>/dev/null | cut -f1)
+            FILE_ENTRIES+=("${filename}|${download_url}|${file_size}")
+        fi
+    done
+
+    local CHANGELOG_URL="https://t.me/ProjectInfinityX/1882"
+
+    if [ -n "${TELEGRAPH_TOKEN:-}" ]; then
+        local CHANGELOG_CONTENT
+        CHANGELOG_CONTENT=$(curl -fsSL \
+            "https://raw.githubusercontent.com/Evolution-X/changelog/refs/heads/bka/changelogs/LATEST.txt" 2>/dev/null)
+
+        if [ -n "$CHANGELOG_CONTENT" ]; then
+            local TELEGRAPH_RESPONSE
+            TELEGRAPH_RESPONSE=$(curl -s \
+                -X POST "https://api.telegra.ph/createPage" \
+                -d "access_token=$TELEGRAPH_TOKEN" \
+                --data-urlencode "title=Changelog $(date '+%Y-%m-%d')" \
+                --data-urlencode "author_name=xc112lg" \
+                --data-urlencode "content=[{\"tag\":\"pre\",\"children\":[$(jq -Rs . <<< "$CHANGELOG_CONTENT")]}]")
+
+            CHANGELOG_URL=$(echo "$TELEGRAPH_RESPONSE" | jq -r '.result.url // empty')
+            if [ -n "$CHANGELOG_URL" ]; then
+                echo "✓ Changelog uploaded: $CHANGELOG_URL"
+            else
+                CHANGELOG_URL="https://t.me/ProjectInfinityX/1882"
+                echo "⚠ Failed to create Telegraph page"
+            fi
+        fi
+    fi
+
+    local DOWNLOADS_SECTION="
+<b>📥 Downloads:</b>"
+
+    for file_entry in "${FILE_ENTRIES[@]}"; do
+        local filename="${file_entry%%|*}"
+        local remaining="${file_entry#*|}"
+        local url="${remaining%%|*}"
+        local size="${remaining##*|}"
+
+        local label="File"
+        local download_links=""
+
+        if [[ "$filename" == *"Vanilla"* ]] || [[ "$filename" == *"vanilla"* ]]; then
+            label="📱 Vanilla ROM"
+            download_links="<a href=\"${url}\">GitHub</a>"
+        elif [[ "$filename" == *"GApps"* ]] || [[ "$filename" == *"gapps"* ]]; then
+            label="🎯 GApps Package"
+            download_links="<a href=\"${url}\">GitHub</a> | <a href=\"https://sourceforge.net/projects/nikgapps/files/Releases/Android-16/\">SourceForge</a>"
+        elif [[ "$filename" == *"recovery"* ]] || [[ "$filename" == *"Recovery"* ]]; then
+            label="🔧 Recovery Image"
+            download_links="<a href=\"${url}\">Download</a>"
+        elif [[ "$filename" == *.zip ]]; then
+            label="📦 ROM Package"
+            download_links="<a href=\"${url}\">Download</a>"
+        elif [[ "$filename" == *.img ]]; then
+            label="💾 Image File"
+            download_links="<a href=\"${url}\">Download</a>"
+        fi
+
+        DOWNLOADS_SECTION+="
+🔹 ${label} - ${download_links} (${size})"
+        DOWNLOADS_SECTION+="
+🔹 🎯 GApps Package <a href=\"https://t.me/xc112lgblossomupdate1/897/\">Bitgapps</a>"
+    done
+    
+    DOWNLOADS_SECTION+="
+
+
+<b>📲 <a href=\"https://telegra.ph/flashing-instruction-11-15\">Installation Guide</a></b>"
+
+    # Substitute placeholders now that CHANGELOG_URL/DOWNLOADS_SECTION are known
+    telegram_message="${telegram_message//\{\{CHANGELOG_URL\}\}/$CHANGELOG_URL}"
+    telegram_message="${telegram_message//\{\{DOWNLOADS_SECTION\}\}/$DOWNLOADS_SECTION}"
+    telegram_message="${telegram_message//\{\{BUILD_DATE\}\}/$(date '+%d/%m/%y')}"
+
+    if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
+        echo "⚠ Telegram credentials not set. Skipping Telegram notification."
+    else
+        echo "Sending Telegram notification..."
+
+        local MSG_LENGTH=${#telegram_message}
+        echo "Message length: $MSG_LENGTH characters"
+        local CAPTION_LIMIT=3500
+        local FALLBACK=0
+
+        if [ $MSG_LENGTH -le $CAPTION_LIMIT ]; then
+            echo "✓ Message fits in caption - sending merged (image + text in one)"
+            local TEMP_JSON
+            TEMP_JSON=$(mktemp)
+            cat > "$TEMP_JSON" << JSONEOF
+{
+    "chat_id": $TELEGRAM_CHAT_ID,
+    "photo": "$banner_image",
+    "caption": $(printf '%s\n' "$telegram_message" | jq -R -s .),
+    "parse_mode": "HTML"
+}
+JSONEOF
+            local RESPONSE
+            RESPONSE=$(curl -s -X POST \
+                -H "Content-Type: application/json" \
+                -d @"$TEMP_JSON" \
+                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendPhoto")
+            rm -f "$TEMP_JSON"
+
+            if echo "$RESPONSE" | grep -q '"ok":true'; then
+                echo "✓ Telegram notification sent successfully (merged)!"
+            else
+                echo "⚠ Merged send failed, trying fallback..."
+                FALLBACK=1
+            fi
+        else
+            echo "⚠ Message too long for caption ($MSG_LENGTH > $CAPTION_LIMIT)"
+            echo "✓ Using fallback: Sending image + text as separate messages"
+            FALLBACK=1
+        fi
+
+        if [ "$FALLBACK" == "1" ]; then
+            echo "Sending image first..."
+            curl -s -X POST \
+                -H "Content-Type: application/json" \
+                -d "{\"chat_id\": $TELEGRAM_CHAT_ID, \"photo\": \"$banner_image\", \"parse_mode\": \"HTML\"}" \
+                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendPhoto" > /dev/null
+
+            echo "Sending full message..."
+            local TEMP_JSON
+            TEMP_JSON=$(mktemp)
+            cat > "$TEMP_JSON" << JSONEOF
+{
+    "chat_id": $TELEGRAM_CHAT_ID,
+    "text": $(printf '%s\n' "$telegram_message" | jq -R -s .),
+    "parse_mode": "HTML"
+}
+JSONEOF
+            local RESPONSE
+            RESPONSE=$(curl -s -X POST \
+                -H "Content-Type: application/json" \
+                -d @"$TEMP_JSON" \
+                "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage")
+            rm -f "$TEMP_JSON"
+
+            if echo "$RESPONSE" | grep -q '"ok":true'; then
+                echo "✓ Telegram notification sent successfully (fallback)!"
+            else
+                echo "✗ Failed to send Telegram notification"
+                echo "Response: $RESPONSE"
+            fi
+        fi
+    fi
+
+    echo "✓ Release complete!"
+}
+
+# ------------------------------------------------------------------------------
+# Variant configs
+# ------------------------------------------------------------------------------
+run_upload_evolution() {
+    stage_artifacts
+    release_and_notify \
+        "EvolutionX-16.0-$(date '+%Y%m%d')" \
+        "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
+        "EvolutionX-17.0" \
+        "Evolution-X" \
+        "NFC not working" \
+        "Drop NFC completly" \
+        "Debloated
+Sashi Kernel
+Builder dont check its own build"
+}
+
+run_upload_derpfest() {
+    stage_artifacts
+    release_and_notify \
+        "DerpFest-16.2-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/95412874?s=200&v=4" \
+        "DerpFest 16.2" \
+        "DerpFest" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_crdroid() {
+    stage_artifacts
+    release_and_notify \
+        "crDroid-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/9610671?s=200&v=4" \
+        "crDroid" \
+        "crDroid" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_alphadroid() {
+    stage_artifacts
+    release_and_notify \
+        "AlphaDroid-16.2-$(date '+%Y%m%d')" \
+        "https://github.com/AlphaDroid-Project.png" \
+        "AlphaDroid 16.2" \
+        "AlphaDroid" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_mist() {
+    stage_artifacts
+    release_and_notify \
+        "MistOS-$(date '+%Y%m%d')" \
+        "https://github.com/Project-Mist-OS.png" \
+        "MistOS" \
+        "MistOS" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_infinity() {
+    stage_artifacts
+    release_and_notify \
+        "InfinityX-16-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/155563206?s=200&v=4" \
+        "ProjectInfinity-X" \
+        "InfinityX" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_lineage() {
+    stage_artifacts
+    release_and_notify \
+        "lineage-23.2-$(date '+%Y%m%d')" \
+        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
+        "Lineage-23.2" \
+        "lineage-23.2" \
+        "NFC not working
+Cant change to Stock Kernel
+Builder dont check its own build due to 2Gb device " \
+        "NFC wont spawn on non NFC variant" \
+        "Debloated
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_lunaris() {
+    stage_artifacts
+    release_and_notify \
+        "LunarisAOSP-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/193316573?s=200&v=4" \
+        "LunarisAOSP 16.2" \
+        "LunarisAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+run_upload_axion() {
+    stage_artifacts
+    release_and_notify \
+        "AxionAOSP-$(date '+%Y%m%d')" \
+        "https://avatars.githubusercontent.com/u/197447202?s=200&v=4" \
+        "AxionAOSP" \
+        "AxionAOSP" \
+        "NFC not working" \
+        "NFC wont spawn on non NFC variant
+Remove font showing up on setting" \
+        "Debloated
+Reintroduce Sandbox cause someone need to hide apps from wife
+Work with both core and basic gapps
+Signed
+Includes MIUI Camera,Lunari Dolby
+Stock Kernel
+Builder dont check its own build due to 2Gb device "
+}
+
+# ------------------------------------------------------------------------------
+# Dispatch
+# ------------------------------------------------------------------------------
+load_env
+
+if [ "$MODE" = "upload" ]; then
+    echo "▶ Starting blossom upload-only: $TARGET"
+    case "$TARGET" in
+        evolution) run_upload_evolution ;;
+        lineage)   run_upload_lineage ;;
+        lunaris)   run_upload_lunaris ;;
+        axion)     run_upload_axion ;;
+        crdroid)   run_upload_crdroid ;;
+        derpfest)  run_upload_derpfest ;;
+        alphadroid) run_upload_alphadroid ;;
+        mist)      run_upload_mist ;;
+        infinity)  run_upload_infinity ;;
+        penguinos) run_upload_penguinos ;;
+    esac
+    echo "✓ Finished blossom upload-only: $TARGET"
+else
+    echo "▶ Starting blossom build: $TARGET"
+    case "$TARGET" in
+        evolution) run_evolution ;;
+        lineage)   run_lineage ;;
+        lunaris)   run_lunaris ;;
+        axion)     run_axion ;;
+        crdroid)   run_crdroid ;;
+        derpfest)  run_derpfest ;;
+        alphadroid) run_alphadroid ;;
+        mist)      run_mist ;;
+        infinity)  run_infinity ;;
+        penguinos) run_penguinos ;;
+    esac
+    echo "✓ Finished blossom build: $TARGET"
+fi
+
+rm -rf .env device/xiaomi
+ls device

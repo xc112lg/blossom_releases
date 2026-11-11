@@ -177,7 +177,7 @@ sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
 
 
 
-/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
+#/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
 /usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
 
 

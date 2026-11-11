@@ -124,6 +124,11 @@ common_env_exports() {
 
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
+
+    export BUILD_BROKEN_SRC_DIR_IS_WRITABLE=false
+    unset BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST
+
+    echo "RBE set: ${RBE_remote_headers:-NOT SET}"
 }
 
 # ------------------------------------------------------------------------------

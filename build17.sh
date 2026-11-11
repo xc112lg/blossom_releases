@@ -175,7 +175,12 @@ allow toolbox per_boot_file:dir create_dir_perms;
 allow toolbox per_boot_file:file create_file_perms;
 EOF
 
+SP=device/xiaomi/blossom/sepolicy/vendor
 
+sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
+sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
+sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
+sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
 #     echo "Soong memory limit patch already applied, skipping."

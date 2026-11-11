@@ -346,6 +346,13 @@ run_axion() {
 
     common_env_exports
     export TARGET_IS_LOW_RAM=true
+
+    SP=device/xiaomi/blossom/sepolicy/vendor
+
+sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
+sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
+sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
+sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
     #lunch lineage_blossom-bp4a-user
    # m installclean
     axion blossom user va

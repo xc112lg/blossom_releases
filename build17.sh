@@ -108,8 +108,8 @@ common_prep() {
     rm -rf TMP_PATCHES
     rm -rf hardware/lineage/
     rm -rf hardware/pixelworks/interfaces
-    sudo apt update >/dev/null 2>&1
-    sudo apt install patchelf -y >/dev/null 2>&1
+    # sudo apt update >/dev/null 2>&1
+    # sudo apt install patchelf -y >/dev/null 2>&1
 }
 
 common_env_exports() {

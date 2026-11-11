@@ -105,6 +105,7 @@ common_prep() {
 }
 
 common_env_exports() {
+
     export TARGET_USES_PICO_GAPPS=true
     export TARGET_INCLUDE_VIA=true
     export TARGET_INCLUDE_REVAMPED=true
@@ -120,6 +121,9 @@ common_env_exports() {
     export MISTOS_MAINTAINER="xc112lg"
     export INFINITY_MAINTAINER=xc112lg
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
+
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
 }
 
 # ------------------------------------------------------------------------------

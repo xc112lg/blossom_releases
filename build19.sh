@@ -1172,5 +1172,8 @@ else
     echo "✓ Finished blossom build: $TARGET"
 fi
 
+
+cd "$ROOT_DIR" || exit 1
 rm -rf .env device/xiaomi
+echo "Contents of device/ after cleanup:"
 ls device

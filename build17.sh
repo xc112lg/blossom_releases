@@ -128,6 +128,57 @@ common_env_exports() {
     export MISTOS_MAINTAINER="xc112lg"
     export INFINITY_MAINTAINER=xc112lg
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
+    rbe_auto
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
+}
+
+# ------------------------------------------------------------------------------
+# SELinux neverallow fixes for the blossom device tree.
+# Rewrites the offending rules instead of just deleting them, so the permissions
+# the device actually needs are kept. Safe to run more than once.
+# ------------------------------------------------------------------------------
+fix_blossom_sepolicy() {
+    local SP=device/xiaomi/blossom/sepolicy/vendor
+
+    # make sure every file we append to ends with a newline
+    for f in $SP/file.te $SP/file_contexts $SP/init.te; do
+        [ -f "$f" ] && sed -i -e '$a\' "$f"
+    done
+
+    # 1. vendor_init -> default_prop
+    #    Can't be rewritten blindly: it needs the real property names, which we
+    #    haven't identified yet (a rewrite is set_prop(vendor_init, <new_prop>)
+    #    plus a property.te + property_contexts entry). Still removed for now.
+    sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
+
+    # 2. hal_power_default -> hal_thermal_service
+    #    Declare the power HAL as a thermal HAL client instead of a raw allow.
+    sed -i 's/^allow hal_power_default hal_thermal_service:service_manager find;$/hal_client_domain(hal_power_default, hal_thermal)/' \
+        $SP/hal_power_default.te
+
+    # 3. init mounton on volte_*_exec (bind mounts in init.*.volte.rc)
+    #    Relabel the bind-mount placeholders (/vendor/bin/volte_imcb, _stack, _ua)
+    #    to a non-exec type and allow mounton on that. The mounted file keeps the
+    #    source's label (volte_*_exec), so the service domain transition still works.
+    sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
+    grep -q 'volte_mnt_file' $SP/file.te || \
+        echo 'type volte_mnt_file, vendor_file_type, file_type;' >> $SP/file.te
+    grep -q 'volte_mnt_file' $SP/file_contexts || cat >> $SP/file_contexts <<'EOF'
+
+# volte bind-mount placeholders (non-exec so init may mounton them)
+/(system\/vendor|vendor)/bin/volte_imcb     u:object_r:volte_mnt_file:s0
+/(system\/vendor|vendor)/bin/volte_stack    u:object_r:volte_mnt_file:s0
+/(system\/vendor|vendor)/bin/volte_ua       u:object_r:volte_mnt_file:s0
+EOF
+    grep -q 'volte_mnt_file' $SP/init.te || \
+        echo 'allow init volte_mnt_file:file mounton;' >> $SP/init.te
+    # drop any conflicting label for the same plain paths from the MTK vendor policy
+    grep -rlE 'bin/volte_(imcb|stack|ua)[[:space:]]+u:object_r:volte_(imcb|stack|ua)_exec' \
+        device/mediatek/sepolicy_vndr --include=file_contexts 2>/dev/null | \
+        xargs -r sed -i -E '/bin\/volte_(imcb|stack|ua)[[:space:]]+u:object_r:volte_(imcb|stack|ua)_exec/d'
+
+    # unrelated: recovery pstorefs rule is still just removed
+    sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
 }
 
 # ------------------------------------------------------------------------------
@@ -175,12 +226,7 @@ allow toolbox per_boot_file:dir create_dir_perms;
 allow toolbox per_boot_file:file create_file_perms;
 EOF
 
-SP=device/xiaomi/blossom/sepolicy/vendor
-
-sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
-sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
-sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
-sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
+fix_blossom_sepolicy
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
 #     echo "Soong memory limit patch already applied, skipping."
@@ -336,12 +382,7 @@ allow toolbox per_boot_file:dir create_dir_perms;
 allow toolbox per_boot_file:file create_file_perms;
 EOF
 
-SP=device/xiaomi/blossom/sepolicy/vendor
-
-sed -i '/^allow vendor_init default_prop:property_service set;$/d' $SP/vendor_init.te
-sed -i '/^allow hal_power_default hal_thermal_service:service_manager find;$/d' $SP/hal_power_default.te
-sed -i -E '/^allow init volte_(imcb|stack|ua)_exec:file mounton;$/d' $SP/init.te
-sed -i '/^allow recovery pstorefs:file r_file_perms;$/d' $SP/recovery.te
+fix_blossom_sepolicy
 
 
 F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java

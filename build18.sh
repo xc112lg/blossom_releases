@@ -347,7 +347,7 @@ fi
 /usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
 /usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
 
-
+sed -i '/name: "ImsService",/,/^}/ s/privileged: true,/privileged: true,\n\tcompile_multilib: "32",/' vendor/xiaomi/blossom/Android.bp
 
     lunch lineage_blossom-cp2a-user
     m installclean

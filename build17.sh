@@ -726,17 +726,21 @@ TEMPLATE
     fi
 
     local version="${custom_version:-$version_default}"
+    local base_version="$version"
+    local suffix=1
 
-    if gh release view "$version" &> /dev/null; then
-        echo "Deleting existing tag and releases for $version..."
-        gh release delete "$version" --yes >/dev/null 2>&1 || true
-        git tag -d "$version" >/dev/null 2>&1 || true
-        git push origin --delete "$version" >/dev/null 2>&1 || true
-        echo "Existing tag and releases deleted."
-    fi
+    # Never delete an existing tag/release. If the tag already exists locally,
+    # on origin, or as a GitHub release, bump a numeric suffix (+1) until free.
+    while gh release view "$version" &> /dev/null \
+        || git rev-parse -q --verify "refs/tags/$version" &> /dev/null \
+        || git ls-remote --exit-code --tags origin "refs/tags/$version" &> /dev/null; do
+        version="${base_version}-${suffix}"
+        suffix=$((suffix + 1))
+    done
+    echo "Using release tag: $version"
 
     git tag -a "$version" -m "Release $version"
-    git push origin "$version" --force -q >/dev/null 2>&1
+    git push origin "$version" -q >/dev/null 2>&1
 
     declare -a filenames
     filenames=(*.zip *.img *.txt *.json)

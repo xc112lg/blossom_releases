@@ -288,26 +288,69 @@ run_derpfest() {
 # ------------------------------------------------------------------------------
 run_crdroid() {
     common_prep
-    rm -rf .repo/local_manifests
-    repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --git-lfs --no-clone-bundle --depth 1
+    rm -rf .repo/local_manifests packages/apps/Evolver vendor/extras
+    repo init -u https://github.com/crdroidandroid/android.git -b 17.0 --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+    cd build/soong
+    git fetch https://github.com/PixelOS-AOSP/android_build_soong refs/changes/93/10693/2 && git cherry-pick FETCH_HEAD
+    cd -
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
     common_env_exports
+export WITH_ADB_INSECURE=true 
+grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
+sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
+    cat build/soong/scripts/gen_build_prop.py
+    # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
+    # sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
+    # sed -i '/fonts_customization_emoji_\(ios\|samsung\|swiftui\|facebook\)\.xml/d' vendor/extras/evolution.mk
+    sed -i '/\/class\/typec.*sysfs_usb_nonplat/d' device/mediatek/sepolicy_vndr/basic/non_plat/genfs_contexts
+    perl -0pi -e 's/cc_prebuilt_library_shared\s*\{\s*name:\s*"libui-v32",.*?^\}//ms' device/xiaomi/blossom/vndk/Android.bp
+D=device/xiaomi/blossom/sepolicy
+# type + labeling already come from the platform; vendor can't see/redeclare it
+sed -i '/per_boot_file/d' $D/vendor/file.te $D/vendor/file_contexts \
+                          $D/vendor/init.te $D/vendor/kernel.te $D/vendor/toolbox.te
+# same rules, but in system_ext private where the type is visible
+cat >> $D/private/init.te <<'EOF'
 
-    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values
-    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/core/res/res/values/cr_config.xml \
-        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/core/res/res/values/cr_config.xml
+allow init per_boot_file:file ioctl;
+allowxperm init per_boot_file:file ioctl { F2FS_IOC_SET_PIN_FILE };
+EOF
+cat >> $D/private/kernel.te <<'EOF'
+allow kernel per_boot_file:file r_file_perms;
+EOF
+cat >> $D/private/toolbox.te <<'EOF'
+allow toolbox per_boot_file:dir create_dir_perms;
+allow toolbox per_boot_file:file create_file_perms;
+EOF
 
-    mkdir -p device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values
-    curl -sf -o device/xiaomi/blossom/overlay/frameworks/base/packages/SystemUI/res/values/cr_config.xml \
-        https://raw.githubusercontent.com/crdroidandroid/android_frameworks_base/16.0/packages/SystemUI/res/values/cr_config.xml
-    sed -i 's|"maintainer": "\${MAINTAINER:-}"|"maintainer": "xc112lg"|' vendor/lineage/build/tools/createjson.sh
-    sed -i 's|https://raw\.githubusercontent\.com/crdroidandroid|https://raw.githubusercontent.com/xc112lg|g' packages/apps/Settings/src/com/android/settings/deviceinfo/firmwareversion/BuildMaintainerPreference.kt
-    lunch lineage_blossom-bp4a-user
+
+
+# if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
+#     echo "Soong memory limit patch already applied, skipping."
+# else
+#     curl -Ls https://github.com/yaap-17-stone/build_soong/commit/f9c27b0b9298f6eeee9a850346e0a646c3eaeb87.patch | \
+#         git -C build/soong am
+# fi
+
+if grep -q 'debug.SetMemoryLimit(55 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
+    echo "Soong memory limit patch already applied, skipping."
+else
+    curl -Ls https://github.com/xc112lg/build_soong/commit/79778bd182d3d06aadf8be9e6d8b3abae15bdb77.patch | \
+        git -C build/soong am
+fi
+
+
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
+/usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
+
+
+
+    lunch lineage_blossom-cp2a-user
     m installclean
     m bacon
 

@@ -1,3 +1,3 @@
 curl -sf https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/build17.sh | bash  -s evolution 
-curl -sf https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/build19.sh | bash  -s crdroid
+curl -sf https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/build18.sh | bash  -s crdroid
 #curl -sf https://raw.githubusercontent.com/xc112lg/blossom_releases/refs/heads/main/bb.sh | bash

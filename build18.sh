@@ -354,6 +354,7 @@ sed -i '/name: "ImsService",/,/^}/ s/privileged: true,/privileged: true,\n\tcomp
     m bacon
 
     run_upload_crdroid
+    grep -n "class IsimFileHandler" frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java > a.txt
 }
 
 # ------------------------------------------------------------------------------

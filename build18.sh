@@ -129,7 +129,7 @@ common_env_exports() {
     export INFINITY_MAINTAINER=xc112lg
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
-   # rbe_auto
+    rbe_auto
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 }
 

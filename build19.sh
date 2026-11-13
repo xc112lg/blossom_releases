@@ -1173,7 +1173,7 @@ else
 fi
 
 
-cd "$ROOT_DIR" || exit 1
+cd -
 rm -rf .env device/xiaomi
 echo "Contents of device/ after cleanup:"
 ls device

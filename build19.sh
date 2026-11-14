@@ -127,6 +127,7 @@ common_env_exports() {
     export ALPHA_MAINTAINER="xc112lg | How's Your Day"
     export MISTOS_MAINTAINER="xc112lg"
     export INFINITY_MAINTAINER=xc112lg
+    sed -i '$a ro.surface_flinger.supports_background_blur=1' device/xiaomi/blossom/system.prop
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
     rbe_auto

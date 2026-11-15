@@ -121,26 +121,7 @@ common_env_exports() {
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     rm -rf out/soong/.intermediates/build/soong/product-build.prop
 #!/bin/bash
-F=/mnt/data/rom/device/axion/common/config/version.mk
 
-if grep -q AXION_VERSION_MK_INCLUDED "$F"; then
-    echo "Guard already present in $F, nothing to do."
-    exit 0
-fi
-
-cp "$F" "$F.bak" || exit 1
-
-perl -0pi -e 's/\A/ifndef AXION_VERSION_MK_INCLUDED\nAXION_VERSION_MK_INCLUDED := true\n\n/; s/\z/\nendif\n/' "$F" || exit 1
-
-echo "Patched $F (backup: $F.bak)"
-grep -n "AXION_VERSION_MK_INCLUDED\|^endif" "$F"
-
-    
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
-
-    export BUILD_BROKEN_SRC_DIR_IS_WRITABLE=false
-    unset BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST
 
 }
 

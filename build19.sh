@@ -1193,6 +1193,6 @@ fi
 
 
 cd -
-rm -rf .env device/xiaomi
+#rm -rf .env device/xiaomi
 echo "Contents of device/ after cleanup:"
 ls device

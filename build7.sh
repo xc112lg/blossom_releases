@@ -336,7 +336,7 @@ run_lunaris() {
     . build/envsetup.sh
     export WITH_GMS=false
     export TARGET_INCLUDE_BCR=false
-    export ro.lunaris.maintainer=xc112lg
+    #export ro.lunaris.maintainer=xc112lg
     common_env_exports
     sed -i "\$a ro.lunaris.maintainer=xc112lg | How's Your Day" device/xiaomi/blossom/system.prop
 

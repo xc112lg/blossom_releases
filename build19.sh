@@ -133,11 +133,11 @@ common_env_exports() {
     rbe_auto
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 
-#     IMS=frameworks/opt/net/ims/src/java/com/android/ims/ImsManager.java
+    IMS=frameworks/opt/net/ims/src/java/com/android/ims/ImsManager.java
 
-# ls -l "$IMS"
-# grep -n 'PROVISIONING_VALUE_ENABLED' "$IMS"
-# perl -0777 -pe 's{return\s*\(\s*setting\s*==\s*SUB_PROPERTY_NOT_INITIALIZED\s*\|\|\s*setting\s*==\s*ProvisioningManager\.PROVISIONING_VALUE_ENABLED\s*\);}{return setting == ProvisioningManager.PROVISIONING_VALUE_ENABLED;}' "$IMS" | grep -n -A6 'isVtEnabledByUser'
+ls -l "$IMS"
+grep -n 'PROVISIONING_VALUE_ENABLED' "$IMS"
+perl -0777 -pe 's{return\s*\(\s*setting\s*==\s*SUB_PROPERTY_NOT_INITIALIZED\s*\|\|\s*setting\s*==\s*ProvisioningManager\.PROVISIONING_VALUE_ENABLED\s*\);}{return setting == ProvisioningManager.PROVISIONING_VALUE_ENABLED;}' "$IMS" | grep -n -A6 'isVtEnabledByUser'
 
 
 }

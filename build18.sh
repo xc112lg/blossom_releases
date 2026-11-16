@@ -133,7 +133,22 @@ common_env_exports() {
     rbe_auto
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 
-    
+  F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
+
+if [ ! -f "$F" ]; then
+    echo "error: $F not found (run this from the repo root)" >&2
+    exit 1
+fi
+
+if grep -q '^public final class IsimFileHandler extends IccFileHandler' "$F"; then
+    sed -i 's/^public final class IsimFileHandler extends IccFileHandler/public class IsimFileHandler extends IccFileHandler/' "$F"
+    echo "patched IsimFileHandler"
+elif grep -q '^public class IsimFileHandler extends IccFileHandler' "$F"; then
+    echo "skip: IsimFileHandler already patched"
+else
+    echo "error: unexpected IsimFileHandler declaration, not patched" >&2
+    exit 1
+fi  
 
 }
 

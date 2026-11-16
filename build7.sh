@@ -361,12 +361,7 @@ perl -0pi -e 's/\A/ifndef AXION_VERSION_MK_INCLUDED\nAXION_VERSION_MK_INCLUDED :
 echo "Patched $F (backup: $F.bak)"
 grep -n "AXION_VERSION_MK_INCLUDED\|^endif" "$F"
 
-    
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
 
-    export BUILD_BROKEN_SRC_DIR_IS_WRITABLE=false
-    unset BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST
 
     #lunch lineage_blossom-bp4a-user
    # m installclean

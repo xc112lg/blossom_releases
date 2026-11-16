@@ -345,6 +345,29 @@ run_axion() {
     export TARGET_IS_LOW_RAM=true
 
 sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
+
+
+F=device/axion/common/config/version.mk
+
+if grep -q AXION_VERSION_MK_INCLUDED "$F"; then
+    echo "Guard already present in $F, nothing to do."
+    exit 0
+fi
+
+cp "$F" "$F.bak" || exit 1
+
+perl -0pi -e 's/\A/ifndef AXION_VERSION_MK_INCLUDED\nAXION_VERSION_MK_INCLUDED := true\n\n/; s/\z/\nendif\n/' "$F" || exit 1
+
+echo "Patched $F (backup: $F.bak)"
+grep -n "AXION_VERSION_MK_INCLUDED\|^endif" "$F"
+
+    
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
+
+    export BUILD_BROKEN_SRC_DIR_IS_WRITABLE=false
+    unset BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST
+
     #lunch lineage_blossom-bp4a-user
    # m installclean
     axion blossom user va
@@ -732,14 +755,14 @@ run_upload_evolution() {
         "Evolution-X" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_derpfest() {
@@ -751,14 +774,14 @@ run_upload_derpfest() {
         "DerpFest" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_crdroid() {
@@ -770,14 +793,14 @@ run_upload_crdroid() {
         "crDroid" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_alphadroid() {
@@ -789,14 +812,14 @@ run_upload_alphadroid() {
         "AlphaDroid" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_mist() {
@@ -808,14 +831,14 @@ run_upload_mist() {
         "MistOS" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_infinity() {
@@ -827,14 +850,14 @@ run_upload_infinity() {
         "InfinityX" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_shinkai() {
@@ -846,14 +869,14 @@ run_upload_shinkai() {
         "Shinkai" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_lineage() {
@@ -865,14 +888,14 @@ run_upload_lineage() {
         "lineage-23.2" \
         "NFC not working
 Cant change to Stock Kernel
-Builder dont check its own build due to 2Gb device " \
+" \
         "NFC wont spawn on non NFC variant" \
         "Debloated
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_lunaris() {
@@ -884,14 +907,14 @@ run_upload_lunaris() {
         "LunarisAOSP" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 run_upload_axion() {
@@ -903,14 +926,14 @@ run_upload_axion() {
         "AxionAOSP" \
         "NFC not working" \
         "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+" \
         "Debloated
 Reintroduce Sandbox cause someone need to hide apps from wife
 Work with both core and basic gapps
 Signed
 Includes MIUI Camera,Lunari Dolby
 Stock Kernel
-Builder dont check its own build due to 2Gb device "
+"
 }
 
 # ------------------------------------------------------------------------------

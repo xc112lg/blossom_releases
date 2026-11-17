@@ -463,13 +463,13 @@ fi
 
 sed -n '24,26p' "$F"
 
-cat >> device/xiaomi/blossom/system.prop << 'EOF'
+# cat >> device/xiaomi/blossom/system.prop << 'EOF'
 
-# INFI About Phone
-ro.product.marketname=iPhone 18 Pro Max Fully Paid
-ro.infinity.soc=A20 Pro
-ro.infinity.camera=48MP + 48MP + 48MP
-EOF
+# # INFI About Phone
+# ro.product.marketname=iPhone 18 Pro Max Fully Paid
+# ro.infinity.soc=A20 Pro
+# ro.infinity.camera=48MP + 48MP + 48MP
+# EOF
 # DM=device/xiaomi/blossom/device.mk
 
 # if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then

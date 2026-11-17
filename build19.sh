@@ -543,27 +543,19 @@ run_lineage() {
     common_prep
     rm -rf vendor/lineage
     rm -rf .repo/local_manifests
-    repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs --depth=1
-    git clone https://github.com/xc112lg/blossom_manifest.git -b a1 .repo/local_manifests
+    repo init -u https://github.com/LineageOS/android.git -b lineage-24.0 --git-lfs --depth=1
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
-
-    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/b8a9f24f9ff6e8de021fa33fc65520571fcf7478.patch | git -C hardware/mediatek am
-    curl -L https://github.com/xc112lg/android_hardware_mediatek/commit/8c779b742a41bfd89376933722c5232ba7b1731f.patch | git -C hardware/mediatek am
 
     export WITH_SU=true
     export WITH_GMS=false
     export EVO_BUILD_TYPE=Unofficial
 
-    sed -i 's|tar xfp $PARAM_BOOTANIMATION_TAR -C $INTERMEDIATES|python3 -c "import tarfile; tarfile.open(\\"$PARAM_BOOTANIMATION_TAR\\").extractall(path=\\"$INTERMEDIATES\\")"|' vendor/lineage/bootanimation/gen-bootanimation.sh
-    sed -i '/Command:.*buildFlagInternal/c\            Command: `${buildFlagInternal} --maps-file ${in} --quiet --declarations-only get && : > ${out}`,' build/soong/aconfig/build_flags/init.go
-    sed -i '/^import subprocess$/a from datetime import datetime, timezone' build/soong/scripts/gen_build_prop.py && sed -i '/config\["Date"\] = subprocess.check_output/,/config\["DateUtc"\] = subprocess.check_output/c\  dt = datetime.fromtimestamp(int(raw_date), timezone.utc)\n  config["Date"] = dt.strftime("%a %b %d %H:%M:%S UTC %Y")\n  config["DateUtc"] = str(int(raw_date))' build/soong/scripts/gen_build_prop.py
-
     common_env_exports
 
-    export RBE_LOG=DEBUG
-    export RBE_VERBOSE=1
+
 
     lunch lineage_blossom-bp4a-user
     m installclean

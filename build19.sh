@@ -1003,7 +1003,7 @@ JSONEOF
 run_upload_evolution() {
     stage_artifacts
     release_and_notify \
-        "EvolutionX-16.0-$(date '+%Y%m%d')" \
+        "EvolutionX-17.0-$(date '+%Y%m%d')" \
         "https://github.com/Evolution-X/manifest/raw/bka/Banner.png" \
         "EvolutionX-17.0" \
         "Evolution-X" \
@@ -1022,13 +1022,10 @@ run_upload_derpfest() {
         "DerpFest 16.2" \
         "DerpFest" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_crdroid() {
@@ -1039,15 +1036,10 @@ run_upload_crdroid() {
         "crDroid" \
         "crDroid" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_alphadroid() {
@@ -1058,15 +1050,11 @@ run_upload_alphadroid() {
         "AlphaDroid 16.2" \
         "AlphaDroid" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "NFC not working" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_mist() {
@@ -1077,53 +1065,38 @@ run_upload_mist() {
         "MistOS" \
         "MistOS" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_infinity() {
     stage_artifacts
     release_and_notify \
-        "InfinityX-16-$(date '+%Y%m%d')" \
+        "InfinityX-17-$(date '+%Y%m%d')" \
         "https://avatars.githubusercontent.com/u/155563206?s=200&v=4" \
         "ProjectInfinity-X" \
         "InfinityX" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_lineage() {
     stage_artifacts
     release_and_notify \
-        "lineage-23.2-$(date '+%Y%m%d')" \
+        "lineage-24.0-$(date '+%Y%m%d')" \
         "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
-        "Lineage-23.2" \
-        "lineage-23.2" \
-        "NFC not working
-Cant change to Stock Kernel
-Builder dont check its own build due to 2Gb device " \
-        "NFC wont spawn on non NFC variant" \
+        "Lineage-24.0" \
+        "lineage-24.0" \
+        "NFC not working" \
+        "Drop NFC completly" \
         "Debloated
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_lunaris() {
@@ -1134,15 +1107,10 @@ run_upload_lunaris() {
         "LunarisAOSP 16.2" \
         "LunarisAOSP" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 run_upload_axion() {
@@ -1153,15 +1121,10 @@ run_upload_axion() {
         "AxionAOSP" \
         "AxionAOSP" \
         "NFC not working" \
-        "NFC wont spawn on non NFC variant
-Remove font showing up on setting" \
+        "Drop NFC completly" \
         "Debloated
-Reintroduce Sandbox cause someone need to hide apps from wife
-Work with both core and basic gapps
-Signed
-Includes MIUI Camera,Lunari Dolby
-Stock Kernel
-Builder dont check its own build due to 2Gb device "
+Sashi Kernel
+Builder dont check its own build"
 }
 
 # ------------------------------------------------------------------------------

@@ -472,16 +472,16 @@ ro.infinity.camera=48MP + 48MP + 48MP
 EOF
 
 perl -pi -e 's/Task\s+packaged_task\s*\(\s*\[\s*=\s*\]\s*\(\s*\)\s*\{/Task packaged_task([=, this]() {/g' frameworks/native/cmds/dumpstate/DumpPool.h
-# DM=device/xiaomi/blossom/device.mk
+DM=device/xiaomi/blossom/device.mk
 
-# if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
-#     echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
-# else
-#     sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
-#     echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
-# fi
+if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
+    echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
+else
+    sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
+    echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
+fi
 
-# grep -n 'VINTF' "$DM"
+grep -n 'VINTF' "$DM"
 
 
 # sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk

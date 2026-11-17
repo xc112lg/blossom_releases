@@ -131,7 +131,7 @@ common_env_exports() {
     sed -i '$a ro.surface_flinger.supports_background_blur=1' device/xiaomi/blossom/system.prop
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
-    rbe_auto
+        source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 
   F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
@@ -546,6 +546,7 @@ run_lineage() {
     repo init -u https://github.com/LineageOS/android.git -b lineage-24.0 --git-lfs --depth=1
     git clone https://github.com/xc112lg/blossom_manifest.git -b 17 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
+
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
 

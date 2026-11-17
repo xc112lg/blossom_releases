@@ -484,9 +484,9 @@ perl -pi -e 's/Task\s+packaged_task\s*\(\s*\[\s*=\s*\]\s*\(\s*\)\s*\{/Task packa
 # grep -n 'VINTF' "$DM"
 
 
-sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
+# sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
 
-# echo 'SKIP_VINTF_COMPAT_CHECK := true' >> device/xiaomi/blossom/BoardConfig.mk
+echo 'SKIP_VINTF_COMPAT_CHECK := true' >> device/xiaomi/blossom/BoardConfig.mk
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
 #     echo "Soong memory limit patch already applied, skipping."

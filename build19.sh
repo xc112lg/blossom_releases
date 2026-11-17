@@ -771,7 +771,7 @@ zyexro for kernel
 Yui Onanii, fukiame, @snnbyyds, @Sushrut1101, xiaomi-blossom-dev contributors for base tree
 kudos to crave.io 
 @Anna_Choudhary for the build server
-0kaarun & Yohan Yuan for their help
+@okaarunh & @Yohanyuan @plmzaq2112 for their help
 Crdroid Blossom team
 
 <b>🌐 Stay Updated:</b>

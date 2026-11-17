@@ -550,7 +550,8 @@ sed -i 's/sdk_version: "37"/sdk_version: "36"/' \
   packages/apps/Etar/app/Android.bp packages/apps/Canvas/app/Android.bp
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
     . build/envsetup.sh
-
+/usr/bin/perl -0pi -e 's|(soong_namespace\s*\{.*?imports:\s*\[.*?)(\n(\s*)"hardware/google/pixel",)|$1$2\n$3"hardware/google/pixel/usb",|s' hardware/mediatek/Android.bp
+/usr/bin/grep -q '"hardware/google/pixel/pixelstats"' hardware/mediatek/Android.bp || /usr/bin/perl -0pi -e 's|(\n(\s*)"hardware/google/pixel/usb",)|$1\n$2"hardware/google/pixel/pixelstats",|' hardware/mediatek/Android.bp
     export WITH_SU=true
     export WITH_GMS=false
     export EVO_BUILD_TYPE=Unofficial

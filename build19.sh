@@ -514,8 +514,13 @@ fi
     sed -i 's/lineage_blossom/infinity_blossom/g' device/xiaomi/blossom/AndroidProducts.mk
     sed -i 's/^PRODUCT_NAME := lineage_blossom$/PRODUCT_NAME := infinity_blossom/' device/xiaomi/blossom/lineage_blossom.mk
     grep '^PRODUCT_NAME' device/xiaomi/blossom/lineage_blossom.mk
+    
+    # 1. Rename the makefile FIRST so subsequent modifications hit the right file
     mv device/xiaomi/blossom/lineage_blossom.mk device/xiaomi/blossom/infinity_blossom.mk
+    
+    # 2. Now perform modifications using the correct filename
     sed -i 's#$(call inherit-product, vendor/lineage/config/common_full_phone.mk)#$(call inherit-product, vendor/infinity/config/common_full_phone.mk)#' device/xiaomi/blossom/infinity_blossom.mk
+    sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/infinity_blossom.mk
     sed -i '$a INFINITY_MAINTAINER := "xc112lg"' device/xiaomi/blossom/BoardConfig.mk
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/infinity_blossom.mk
     #source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1

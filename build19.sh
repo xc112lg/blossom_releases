@@ -463,22 +463,28 @@ fi
 
 sed -n '24,26p' "$F"
 
+cat >> device/xiaomi/blossom/system.prop << 'EOF'
 
-DM=device/xiaomi/blossom/device.mk
+# INFI About Phone
+ro.product.marketname=iPhone 18 Pro Max Fully Paid
+ro.infinity.soc=A20 Pro
+ro.infinity.camera=48MP + 48MP + 48MP
+EOF
+# DM=device/xiaomi/blossom/device.mk
 
-if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
-    echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
-else
-    sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
-    echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
-fi
+# if grep -q '^PRODUCT_ENFORCE_VINTF_MANIFEST' "$DM"; then
+#     echo "skip: PRODUCT_ENFORCE_VINTF_MANIFEST already set"
+# else
+#     sed -i '/^PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := false$/a PRODUCT_ENFORCE_VINTF_MANIFEST := false' "$DM"
+#     echo "added PRODUCT_ENFORCE_VINTF_MANIFEST := false"
+# fi
 
-grep -n 'VINTF' "$DM"
+# grep -n 'VINTF' "$DM"
 
 
-sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
+# sed -i 's|^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|#DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE|' device/xiaomi/blossom/BoardConfig.mk
 
-echo 'SKIP_VINTF_COMPAT_CHECK := true' >> device/xiaomi/blossom/BoardConfig.mk
+# echo 'SKIP_VINTF_COMPAT_CHECK := true' >> device/xiaomi/blossom/BoardConfig.mk
 
 # if grep -q 'debug.SetMemoryLimit(40 \* 1024 \* 1024 \* 1024)' build/soong/cmd/soong_build/main.go; then
 #     echo "Soong memory limit patch already applied, skipping."

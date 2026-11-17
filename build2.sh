@@ -129,11 +129,25 @@ common_env_exports() {
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
 
     
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    source "$SCRIPT_DIR/rbe_env.sh" >/dev/null 2>&1
+F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
 
-    export BUILD_BROKEN_SRC_DIR_IS_WRITABLE=false
-    unset BUILD_BROKEN_SRC_DIR_RW_ALLOWLIST
+if [ ! -f "$F" ]; then
+    echo "error: $F not found (run this from the repo root)" >&2
+    exit 1
+fi
+
+if grep -q '^public final class IsimFileHandler extends IccFileHandler' "$F"; then
+    sed -i 's/^public final class IsimFileHandler extends IccFileHandler/public class IsimFileHandler extends IccFileHandler/' "$F"
+    echo "patched IsimFileHandler"
+elif grep -q '^public class IsimFileHandler extends IccFileHandler' "$F"; then
+    echo "skip: IsimFileHandler already patched"
+else
+    echo "error: unexpected IsimFileHandler declaration, not patched" >&2
+    exit 1
+fi  
+
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 
 }
 

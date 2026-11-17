@@ -515,7 +515,7 @@ zyexro for kernel
 Yui Onanii, fukiame, @snnbyyds, <a href="http://t.me/Sushrut1101">Sushrut</a>, xiaomi-blossom-dev contributors for base tree
 kudos to crave.io 
 @Anna_Choudhary for the build server
-0kaarun & Yohan Yuan for their help
+@okaarunh & @Yohanyuan @plmzaq2112 for their help
 Thanks to all other devs
 
 <b>🌐 Stay Updated:</b>

@@ -100,14 +100,12 @@ common_prep() {
     load_env
     setup_git_auth
     rm -rf .repo/local_manifests/
-    #rm -rf device/xiaomi
-   # rm -rf vendor/xiaomi/blossom
-    #rm -rf kernel/xiaomi/blossom
-   # rm -rf packages/apps/Settings
+    rm -rf device/xiaomi
+    rm -rf vendor/xiaomi/blossom
+    rm -rf kernel/xiaomi/blossom
     rm -rf hardware/mediatek
     rm -rf TMP_PATCHES
-   # rm -rf hardware/lineage/
-   # rm -rf hardware/pixelworks/interfaces frameworks/opt
+    rm -rf hardware/lineage/
     # sudo apt update >/dev/null 2>&1
     # sudo apt install patchelf -y >/dev/null 2>&1
 }

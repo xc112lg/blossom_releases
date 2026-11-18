@@ -451,6 +451,10 @@ EOF
 
 mv hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp.disabled
 
+perl -pi.bak2 -e 's/^(\s*)vendor: true,/$1product_specific: true,\n$1vendor_available: true,/' \
+  hardware/mediatek/interfaces/hardware/bluetooth/audio/2.1/Android.bp \
+  hardware/mediatek/interfaces/hardware/bluetooth/audio/2.2/Android.bp
+
 # perl -i.bak -pe 's/^(\s*)system_ext_specific: true,/$1vendor: true,/' hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp && grep -n "vendor: true\|system_ext_specific" hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp
 
 

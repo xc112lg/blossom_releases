@@ -450,7 +450,7 @@ allow toolbox per_boot_file:file create_file_perms;
 EOF
 
 
-perl -i.bak -pe 's/^(\s*)system_ext_specific: true,/$1vendor: true,/' hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp && grep -n "vendor: true\|system_ext_specific" hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp
+# perl -i.bak -pe 's/^(\s*)system_ext_specific: true,/$1vendor: true,/' hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp && grep -n "vendor: true\|system_ext_specific" hardware/mediatek/interfaces/hardware/lbs/1.0/Android.bp
 
 
 F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java

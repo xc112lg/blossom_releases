@@ -128,6 +128,8 @@ common_env_exports() {
     export MISTOS_MAINTAINER="xc112lg"
     export INFINITY_MAINTAINER=xc112lg
     export WITH_SU=true
+    export USE_CCACHE=1
+export CCACHE_EXEC=/usr/bin/ccache
     sed -i '$a ro.surface_flinger.supports_background_blur=1' device/xiaomi/blossom/system.prop
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
@@ -413,7 +415,7 @@ run_infinity() {
     common_prep
     rm -rf .repo/local_manifests prebuilts/misc/protobuf_vendorcompat
     repo init --no-repo-verify -u https://github.com/ProjectInfinity-X/manifest -b 17 -g default,-mips,-darwin,-notdefault --git-lfs --depth=1
-    git clone https://github.com/xc112lg/blossom_manifest.git -b 1207 .repo/local_manifests
+    git clone https://github.com/xc112lg/blossom_manifest.git -b 20 .repo/local_manifests
     curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/resync.sh | bash
 
 export WITH_ADB_INSECURE=true 

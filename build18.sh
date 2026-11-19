@@ -164,6 +164,23 @@ cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2237_China-Tel
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <carrier_config>
     <boolean name="carrier_volte_available_bool" value="true"/>
+    <boolean name="allow_emergency_numbers_in_call_log_bool" value="true"/>
+    <boolean name="show_apn_setting_cdma_bool" value="true"/>
+    <string name="sim_country_iso_override_string">cn</string>
+    <boolean name="ascii_7_bit_support_for_long_message_bool" value="true"/>
+    <string-array name="telephony_network_capability_priorities_string_array" num="11">
+        <item value="eims:90"/>
+        <item value="supl:80"/>
+        <item value="mms:70"/>
+        <item value="xcap:60"/>
+        <item value="cbs:50"/>
+        <item value="mcx:50"/>
+        <item value="fota:50"/>
+        <item value="ims:40"/>
+        <item value="dun:30"/>
+        <item value="enterprise:20"/>
+        <item value="internet:20"/>
+    </string-array>
 </carrier_config>
 EOF
 

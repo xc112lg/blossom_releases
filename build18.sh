@@ -163,31 +163,31 @@ EOF
 cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2237_China-Telecom.xml << 'EOF'
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <carrier_config>
-    <long name="mt_request_media_change_timer" value="20000" />
-    <boolean name="vilte_data_is_metered_bool" value="false"/>
-    <boolean name="support_multi_video_call" value="false"/>
-    <boolean name="carrier_volte_available_bool" value="true"/>
-    <boolean name="carrier_vt_available_bool" value="true"/>
     <boolean name="allow_emergency_numbers_in_call_log_bool" value="true"/>
     <boolean name="show_apn_setting_cdma_bool" value="true"/>
     <string name="sim_country_iso_override_string">cn</string>
-    <boolean name="show_4g_for_lte_data_icon_bool" value="true"/>
-    <boolean name="hide_video_call_forward" value="true"/>
-    <!--UNISOC: port for porting bug1069096-->
-    <boolean name="call_forwarding_over_ut_warning_bool" value="true" />
-    <boolean name="call_barring_over_ut_warning_bool" value="true" />
-    <boolean name="caller_id_over_ut_warning_bool" value="true" />
-    <boolean name="call_waiting_over_ut_warning_bool" value="true" />
-    <boolean name="show_no_service_volte_icon" value="true" />
-    <boolean name="carrier_downgrade_to_voice_when_rtp_timeout" value="true" />
-    <boolean name="hide_video_call_forward" value="true"/>
-    <boolean name="show_number_and_name" value="true"/>
-    <string-array name="hide_apn_types_string_array" num="1">
-        <item value="mms"/>
-    </string-array>
-    <boolean name="skip_cf_fail_to_disable_dialog_bool" value="true" />
-    <!--UNISOC: add for support video ring tone -->
-    <boolean name="support_video_ring_tone" value="true"/>
+    <boolean name="call_forwarding_over_ut_warning_bool" value="true"/>
+    <boolean name="call_barring_over_ut_warning_bool" value="true"/>
+    <boolean name="call_waiting_over_ut_warning_bool" value="true"/>
+    <boolean name="caller_id_over_ut_warning_bool" value="true"/>
+    <!-- M: Single video call mode -->
+    <boolean name="mtk_allow_one_video_call_only_bool" value="true" />
+    <boolean name="allow_hold_video_call_bool" value="false" />
+    <boolean name="allow_add_call_during_video_call" value="false" />
+    <!-- M: InCallUI features begin. @{ -->
+    <boolean name="mtk_allow_cancel_video_upgrade_bool" value="true" />
+    <boolean name="mtk_allow_auto_start_timer_for_cancel_upgrade_bool" value="true" />
+    <int name="mtk_timer_for_cancel_upgrade_int" value="30" />
+    <boolean name="no_sip_message_on_pause_video_bool" value="true" />
+    <boolean name="mtk_vt_dialpad_support_bool" value="true" />
+    <!-- M: InCallUI features end. @} -->
+    <!-- Supplementary Service WWOP Config -->
+    <boolean name="mtk_carrier_ss_gsm_ut_support" value="true" />
+    <boolean name="mtk_carrier_ss_not_support_call_identity" value="true" />
+    <boolean name="ascii_7_bit_support_for_long_message_bool" value="true" />
+    <boolean name="vilte_data_is_metered_bool" value="false" />
+    <boolean name="ignore_data_enabled_changed_for_video_calls" value="true" />
+    <boolean name="carrier_volte_available_bool" value="true"/>
 </carrier_config>
 EOF
 

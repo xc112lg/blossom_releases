@@ -1134,7 +1134,7 @@ run_upload_lineage() {
     stage_artifacts
     release_and_notify \
         "lineage-24.0-$(date '+%Y%m%d')" \
-        "https://upload.wikimedia.org/wikipedia/commons/a/a3/Lineageos_logo.png" \
+        "https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/photo_2026-11-19_21-31-29.jpg" \
         "Lineage-24.0" \
         "lineage-24.0" \
         "NFC not working" \

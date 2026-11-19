@@ -151,6 +151,14 @@ else
     exit 1
 fi  
 
+
+cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2581_DITO-Telecommunity-Corporation.xml << 'EOF'
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<carrier_config>
+    <boolean name="carrier_volte_available_bool" value="true"/>
+</carrier_config>
+EOF
+
 }
 
 # ------------------------------------------------------------------------------

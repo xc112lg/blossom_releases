@@ -557,6 +557,23 @@ run_lineage() {
     export TARGET_INCLUDE_BCR=false
     common_env_exports
 export WITH_ADB_INSECURE=true 
+
+
+persist.service.adb.enable=1
+persist.service.debuggable=1
+persist.sys.usb.config=mtp,adb
+
+
+cat >> device/xiaomi/blossom/system.prop << 'EOF'
+
+# INFI About Phone
+persist.service.adb.enable=1
+persist.service.debuggable=1
+persist.sys.usb.config=mtp,adb
+EOF
+
+
+
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
     # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk

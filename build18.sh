@@ -567,6 +567,8 @@ cat >> device/xiaomi/blossom/system.prop << 'EOF'
 persist.service.adb.enable=1
 persist.service.debuggable=1
 persist.sys.usb.config=mtp,adb
+ro.debuggable=1
+ro.adb.secure=0
 EOF
 
 
@@ -620,7 +622,7 @@ fi
 
 #sed -i '/name: "ImsService",/,/^}/ s/privileged: true,/privileged: true,\n\tcompile_multilib: "32",/' vendor/xiaomi/blossom/Android.bp
 
-    lunch lineage_blossom-cp2a-user
+    lunch lineage_blossom-cp2a-userdebug
     m installclean
     m bacon
 

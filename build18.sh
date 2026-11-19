@@ -156,6 +156,8 @@ cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2581_DITO-Tele
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <carrier_config>
     <boolean name="carrier_volte_available_bool" value="true"/>
+    <boolean name="carrier_volte_provisioned_bool" value="true"/>
+    <boolean name="carrier_volte_provisioning_required_bool" value="true"/>
 </carrier_config>
 EOF
 

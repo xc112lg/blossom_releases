@@ -191,6 +191,10 @@ cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2237_China-Tel
 </carrier_config>
 EOF
 
+
+sed -i '/power-service\\.lineage-libperfmgr/d' device/lineage/sepolicy/common/vendor/file_contexts
+grep -c "lineage-libperfmgr" device/lineage/sepolicy/common/vendor/file_contexts
+
 }
 
 # ------------------------------------------------------------------------------

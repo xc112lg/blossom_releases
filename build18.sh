@@ -559,9 +559,6 @@ run_lineage() {
 export WITH_ADB_INSECURE=true 
 
 
-persist.service.adb.enable=1
-persist.service.debuggable=1
-persist.sys.usb.config=mtp,adb
 
 
 cat >> device/xiaomi/blossom/system.prop << 'EOF'

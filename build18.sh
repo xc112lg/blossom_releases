@@ -163,24 +163,31 @@ EOF
 cat > packages/apps/CarrierConfig/assets/carrier_config_carrierid_2237_China-Telecom.xml << 'EOF'
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <carrier_config>
+    <long name="mt_request_media_change_timer" value="20000" />
+    <boolean name="vilte_data_is_metered_bool" value="false"/>
+    <boolean name="support_multi_video_call" value="false"/>
     <boolean name="carrier_volte_available_bool" value="true"/>
+    <boolean name="carrier_vt_available_bool" value="true"/>
     <boolean name="allow_emergency_numbers_in_call_log_bool" value="true"/>
     <boolean name="show_apn_setting_cdma_bool" value="true"/>
     <string name="sim_country_iso_override_string">cn</string>
-    <boolean name="ascii_7_bit_support_for_long_message_bool" value="true"/>
-    <string-array name="telephony_network_capability_priorities_string_array" num="11">
-        <item value="eims:90"/>
-        <item value="supl:80"/>
-        <item value="mms:70"/>
-        <item value="xcap:60"/>
-        <item value="cbs:50"/>
-        <item value="mcx:50"/>
-        <item value="fota:50"/>
-        <item value="ims:40"/>
-        <item value="dun:30"/>
-        <item value="enterprise:20"/>
-        <item value="internet:20"/>
+    <boolean name="show_4g_for_lte_data_icon_bool" value="true"/>
+    <boolean name="hide_video_call_forward" value="true"/>
+    <!--UNISOC: port for porting bug1069096-->
+    <boolean name="call_forwarding_over_ut_warning_bool" value="true" />
+    <boolean name="call_barring_over_ut_warning_bool" value="true" />
+    <boolean name="caller_id_over_ut_warning_bool" value="true" />
+    <boolean name="call_waiting_over_ut_warning_bool" value="true" />
+    <boolean name="show_no_service_volte_icon" value="true" />
+    <boolean name="carrier_downgrade_to_voice_when_rtp_timeout" value="true" />
+    <boolean name="hide_video_call_forward" value="true"/>
+    <boolean name="show_number_and_name" value="true"/>
+    <string-array name="hide_apn_types_string_array" num="1">
+        <item value="mms"/>
     </string-array>
+    <boolean name="skip_cf_fail_to_disable_dialog_bool" value="true" />
+    <!--UNISOC: add for support video ring tone -->
+    <boolean name="support_video_ring_tone" value="true"/>
 </carrier_config>
 EOF
 

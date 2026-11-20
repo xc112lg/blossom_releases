@@ -559,7 +559,7 @@ run_lineage() {
 export WITH_ADB_INSECURE=true 
 
 
-cat >> device/xiaomi/blossom/http://device.mk/ << 'EOF'
+cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
 # INFI About Phone
 $(call add-product-dex-preopt-module-config, mediatek-common, disable)

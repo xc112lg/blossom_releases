@@ -208,6 +208,20 @@ export WITH_ADB_INSECURE=true
 grep -q '^[[:space:]]*# props\.append("ro\.adb\.secure=1")' build/soong/scripts/gen_build_prop.py ||
 sed -i 's/^\([[:space:]]*\)props\.append("ro\.adb\.secure=1")/\1# props.append("ro.adb.secure=1")/' build/soong/scripts/gen_build_prop.py
     cat build/soong/scripts/gen_build_prop.py
+
+perl -i.bak -pe '
+    BEGIN {
+        $copy = q{$(call find-copy-subdir-files,*,vendor/extras/prebuilt/product/fonts,$(TARGET_COPY_OUT_PRODUCT)/fonts)};
+        $fonts = q{FacebookEmoji.ttf LunarisIosEmoji.ttf SwiftUIEmoji.ttf SamsungColorEmoji.ttf OMFSFPro-Regular.ttf sansserifpro.ttf GoogleSansFlex-Regular.ttf Recursive-VF.ttf Cooljazz.ttf Rosemary.ttf};
+        $replacement = q{$(foreach entry,} . $copy
+            . q{,$(if $(filter } . $fonts
+            . q{,$(notdir $(firstword $(subst :, ,$(entry))))),,$(entry)))};
+    }
+    s/^([ \t]*)\Q$copy\E/$1$replacement/;
+' vendor/extras/evolution.mk
+
+git -C vendor/extras diff -- evolution.mk
+    
     # sed -i '\|vendor/extras/prebuilt/product/fonts,\$(TARGET_COPY_OUT_PRODUCT)/fonts|d' vendor/extras/evolution.mk
     # sed -i '/<string-array name="emoji_style_entries">/,/<\/string-array>/{/emoji_style_stock/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml
     # sed -i '/<string-array name="emoji_style_values">/,/<\/string-array>/{/<item>android<\/item>/!{/<item>/d}}' packages/apps/Evolver/res/values/evolution_arrays.xml

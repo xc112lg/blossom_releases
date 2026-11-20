@@ -131,8 +131,8 @@ common_env_exports() {
     sed -i '$a ro.surface_flinger.supports_background_blur=1' device/xiaomi/blossom/system.prop
     sed -i '$a -include vendor/evolution-priv/keys/keys.mk' device/xiaomi/blossom/lineage_blossom.mk
     sed -i '$a SELINUX_IGNORE_NEVERALLOWS := true' device/xiaomi/blossom/BoardConfig.mk
-       # source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
-   # source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
+        source <(curl -sf https://raw.githubusercontent.com/xc112lg/scripts/refs/heads/lunaris/rbe8.sh) >/dev/null 2>&1
+    source <(curl -sf https://raw.githubusercontent.com/xc112lg/lg_releases/refs/heads/main/rbe_env.sh) >/dev/null 2>&1
 
 
 

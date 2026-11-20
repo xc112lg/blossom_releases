@@ -559,6 +559,21 @@ run_lineage() {
 export WITH_ADB_INSECURE=true 
 
 
+cat >> device/xiaomi/blossom/http://device.mk/ << 'EOF'
+
+# INFI About Phone
+$(call add-product-dex-preopt-module-config, mediatek-common, disable)
+$(call add-product-dex-preopt-module-config, mediatek-framework, disable)
+$(call add-product-dex-preopt-module-config, mediatek-ims-base, disable)
+$(call add-product-dex-preopt-module-config, mediatek-ims-common, disable)
+$(call add-product-dex-preopt-module-config, mediatek-ims-extension-plugin, disable)
+$(call add-product-dex-preopt-module-config, mediatek-ims-legacy, disable)
+$(call add-product-dex-preopt-module-config, mediatek-telecom-common, disable)
+$(call add-product-dex-preopt-module-config, mediatek-telephony-base, disable)
+$(call add-product-dex-preopt-module-config, mediatek-telephony-common, disable)
+EOF
+
+
 
 
 cat >> device/xiaomi/blossom/system.prop << 'EOF'

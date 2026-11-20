@@ -1090,7 +1090,7 @@ run_upload_evolution() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1104,7 +1104,7 @@ run_upload_derpfest() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1118,7 +1118,7 @@ run_upload_crdroid() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1133,7 +1133,7 @@ run_upload_alphadroid() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1147,7 +1147,7 @@ run_upload_mist() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1161,7 +1161,7 @@ run_upload_infinity() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1175,7 +1175,7 @@ run_upload_lineage() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1189,7 +1189,7 @@ run_upload_lunaris() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 
@@ -1203,7 +1203,7 @@ run_upload_axion() {
         "NFC not working" \
         "Drop NFC completly" \
         "Debloated
-Sashi Kernel
+Nadeko Kernel
 Builder dont check its own build"
 }
 

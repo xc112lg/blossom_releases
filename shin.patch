@@ -1,47 +1,16 @@
-From 9928d8c2440eee325ddbdb8c81bd50b08dbc80b1 Mon Sep 17 00:00:00 2001
-From: xz <dev@localhost>
-Date: Mon, 26 Oct 2026 12:05:22 +0000
-Subject: [PATCH] soong: generator: treat optional kernel vars as empty when
- unset
+  F=frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/IsimFileHandler.java
 
----
- .../lineage/build/soong/generator/variables.go  | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+if [ ! -f "$F" ]; then
+    echo "error: $F not found (run this from the repo root)" >&2
+    exit 1
+fi
 
-diff --git a/vendor/lineage/build/soong/generator/variables.go b/vendor/lineage/build/soong/generator/variables.go
-index 8485f94..f103c2b 100644
---- a/vendor/lineage/build/soong/generator/variables.go
-+++ b/vendor/lineage/build/soong/generator/variables.go
-@@ -6,6 +6,20 @@ import (
- 	"android/soong/android"
- )
- 
-+// Variables exported to Soong by config/BoardConfigSoong.mk that are
-+// legitimately empty on some devices or build setups. Make does not export
-+// an empty value, so Soong sees them as unset. Expand them to "" instead of
-+// leaving $(NAME) behind, which later fails with "unknown variable".
-+var lineageOptionalVars = map[string]bool{
-+	"KERNEL_BUILD_OUT_PREFIX":        true,
-+	"KERNEL_CROSS_COMPILE":           true,
-+	"KERNEL_PATH":                    true,
-+	"PATH_OVERRIDE_SOONG":            true,
-+	"TARGET_KERNEL_PLATFORM_TARGET":  true,
-+	"TARGET_KERNEL_SOURCE":           true,
-+	"TARGET_PREBUILT_KERNEL_HEADERS": true,
-+}
-+
- func lineageExpandVariables(ctx android.ModuleContext, in string) string {
- 	lineageVars := ctx.Config().VendorConfig("lineageVarsPlugin")
- 
-@@ -13,6 +27,9 @@ func lineageExpandVariables(ctx android.ModuleContext, in string) string {
- 		if lineageVars.IsSet(name) {
- 			return lineageVars.String(name), nil
- 		}
-+		if lineageOptionalVars[name] {
-+			return "", nil
-+		}
- 		// This variable is not for us, restore what the original
- 		// variable string will have looked like for an Expand
- 		// that comes later.
--- 
-2.43.0
+if grep -q '^public final class IsimFileHandler extends IccFileHandler' "$F"; then
+    sed -i 's/^public final class IsimFileHandler extends IccFileHandler/public class IsimFileHandler extends IccFileHandler/' "$F"
+    echo "patched IsimFileHandler"
+elif grep -q '^public class IsimFileHandler extends IccFileHandler' "$F"; then
+    echo "skip: IsimFileHandler already patched"
+else
+    echo "error: unexpected IsimFileHandler declaration, not patched" >&2
+    exit 1
+fi  

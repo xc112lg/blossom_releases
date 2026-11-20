@@ -837,7 +837,7 @@ release_and_notify() {
 
 <b>❤️ Credits & Thanks:</b>
 @HaiKitoo and 0kaarun for trees
-zyexro for kernel
+zyexro and @dre698 for kernel
 @Yohanyuan for audio fix
 @astechpro20 for msg template
 Yui Onanii, fukiame, @snnbyyds, @Sushrut1101, xiaomi-blossom-dev contributors for base tree

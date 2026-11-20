@@ -351,6 +351,13 @@ fi
 #PRODUCT_PROPERTY_OVERRIDES += ro.adb.secure=0
 #EOF
 
+cat >> device/xiaomi/blossom/device.mk << 'EOF'
+
+# ADB authentication configuration (development builds only)
+PRODUCT_SYSTEM_PROPERTIES += \
+    ro.adb.secure=0
+EOF
+
 
 
 cat >> device/xiaomi/blossom/system.prop << 'EOF'
@@ -364,7 +371,7 @@ ro.adb.secure=0
 EOF
 
 
-    lunch lineage_blossom-cp2a-eng
+    lunch lineage_blossom-cp2a-userdebug
     m installclean
     m bacon
 

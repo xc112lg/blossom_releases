@@ -346,7 +346,12 @@ else
         git -C build/soong am
 fi
 
+cat >> device/xiaomi/blossom/device.mk << 'EOF'
 
+PRODUCT_PROPERTY_OVERRIDES += ro.adb.secure=0
+EOF
+
+PRODUCT_PROPERTY_OVERRIDES += ro.adb.secure=0
 
 
 cat >> device/xiaomi/blossom/system.prop << 'EOF'

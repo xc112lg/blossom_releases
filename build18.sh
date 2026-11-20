@@ -364,9 +364,16 @@ fi
 
 
 
+cat >> device/xiaomi/blossom/system.prop << 'EOF'
 
+# INFI About Phone
+persist.service.adb.enable=1
+persist.service.debuggable=1
+persist.sys.usb.config=mtp,adb
+ro.debuggable=1
+ro.adb.secure=0
+EOF
 
-#sed -i '/name: "ImsService",/,/^}/ s/privileged: true,/privileged: true,\n\tcompile_multilib: "32",/' vendor/xiaomi/blossom/Android.bp
 
     lunch lineage_blossom-cp2a-user
     m installclean

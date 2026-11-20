@@ -375,7 +375,7 @@ ro.adb.secure=0
 EOF
 
 
-    lunch lineage_blossom-cp2a-user
+    lunch lineage_blossom-cp2a-userdebug
     m installclean
     m bacon
 

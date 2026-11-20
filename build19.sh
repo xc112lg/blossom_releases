@@ -351,7 +351,6 @@ cat >> device/xiaomi/blossom/device.mk << 'EOF'
 PRODUCT_PROPERTY_OVERRIDES += ro.adb.secure=0
 EOF
 
-PRODUCT_PROPERTY_OVERRIDES += ro.adb.secure=0
 
 
 cat >> device/xiaomi/blossom/system.prop << 'EOF'
@@ -365,7 +364,7 @@ ro.adb.secure=0
 EOF
 
 
-    lunch lineage_blossom-cp2a-userdebug
+    lunch lineage_blossom-cp2a-eng
     m installclean
     m bacon
 

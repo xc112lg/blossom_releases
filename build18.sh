@@ -196,7 +196,7 @@ else
     exit 1
 fi  
 
-}
+
 #sed -i '/power-service\\.lineage-libperfmgr/d' device/lineage/sepolicy/common/vendor/file_contexts
 #grep -c "lineage-libperfmgr" device/lineage/sepolicy/common/vendor/file_contexts
 
